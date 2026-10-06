@@ -3,7 +3,115 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
+
+// Load .env from both backend and project root
 require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env'), override: true });
+require('dotenv').config({ path: path.join(__dirname, '../.env'), override: true });
+
+// Cloudinary Configuration
+let cloudinary = null;
+try {
+    cloudinary = require('cloudinary').v2;
+    if (process.env.CLOUDINARY_URL) {
+        cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL });
+        console.log("Cloudinary initialized via CLOUDINARY_URL!");
+    } else if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        });
+        console.log("Cloudinary initialized via credentials!");
+    }
+} catch (e) {
+    console.warn("Cloudinary initialization skipped:", e.message);
+}
+
+// Nodemailer Configuration (Instant Email Notifications)
+let nodemailer = null;
+try {
+    nodemailer = require('nodemailer');
+} catch (e) {
+    console.warn("Nodemailer initialization skipped:", e.message);
+}
+
+const sendContactNotificationEmail = async ({ name, email, message }) => {
+    const emailUser = process.env.EMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS;
+    const emailTo = process.env.EMAIL_TO || emailUser;
+
+    if (!nodemailer || !emailUser || !emailPass) {
+        console.log("ℹ️  Email notification skipped: nodemailer or EMAIL_USER/EMAIL_PASS not configured.");
+        return;
+    }
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: emailUser,
+                pass: emailPass
+            }
+        });
+
+        const formattedTime = new Date().toLocaleString('ar-EG', {
+            timeZone: 'Africa/Cairo',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const mailOptions = {
+            from: `"Zizo.dev Portfolio" <${emailUser}>`,
+            to: emailTo,
+            replyTo: email,
+            subject: `🚀 رسالة جديدة في الموقع من: ${name}`,
+            text: `تم استلام رسالة جديدة في موقعك zizo.dev:\n\nالاسم: ${name}\nالبريد: ${email}\nالوقت: ${formattedTime}\n\nنص الرسالة:\n${message}`,
+            html: `
+            <div dir="rtl" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0b0f19; color: #f1f5f9; border: 1px solid #1e293b; border-radius: 16px; overflow: hidden; padding: 28px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                <div style="border-bottom: 1px solid #1e293b; padding-bottom: 18px; margin-bottom: 22px;">
+                    <span style="display: inline-block; background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 9999px; margin-bottom: 10px;">إشعار رسالة جديدة</span>
+                    <h2 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700;">📬 وصلتك رسالة تواصل جديدة!</h2>
+                    <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 13px;">قام زائر بإرسال استفسار عبر نموذج التواصل في موقعك الشخصي zizo.dev</p>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 22px; font-size: 14px;">
+                    <tr style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 10px 0; color: #94a3b8; width: 110px;">👤 <strong>الاسم:</strong></td>
+                        <td style="padding: 10px 0; color: #f8fafc; font-weight: 600;">${name}</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #1e293b;">
+                        <td style="padding: 10px 0; color: #94a3b8;">📧 <strong>البريد:</strong></td>
+                        <td style="padding: 10px 0;"><a href="mailto:${email}" style="color: #38bdf8; text-decoration: none; font-weight: 600;">${email}</a></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px 0; color: #94a3b8;">🕒 <strong>الوقت (مصر):</strong></td>
+                        <td style="padding: 10px 0; color: #cbd5e1;">${formattedTime}</td>
+                    </tr>
+                </table>
+
+                <div style="background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 18px; margin-bottom: 26px;">
+                    <div style="color: #38bdf8; font-size: 12px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">💬 نص الرسالة:</div>
+                    <div style="color: #e2e8f0; font-size: 14px; line-height: 1.7; white-space: pre-wrap;">${message}</div>
+                </div>
+
+                <div style="text-align: center; border-top: 1px solid #1e293b; padding-top: 20px;">
+                    <a href="mailto:${email}?subject=رد بخصوص تواصلك عبر Zizo.dev" style="display: inline-block; background: linear-gradient(135deg, #0284c7, #2563eb); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 10px; font-weight: 600; font-size: 14px; margin: 4px;">الرد المباشر على المرسل</a>
+                    <a href="${process.env.APP_URL || 'https://zizo-dev.vercel.app'}/admin.html" style="display: inline-block; background-color: #1e293b; color: #cbd5e1; text-decoration: none; padding: 12px 22px; border-radius: 10px; font-size: 14px; font-weight: 500; margin: 4px;">فتح لوحة التحكم (Inbox)</a>
+                </div>
+            </div>
+            `
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`✅ Email notification successfully sent to ${emailTo}! ID: ${info.messageId}`);
+    } catch (err) {
+        console.error("❌ Failed to send email notification:", err.message);
+    }
+};
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,13 +120,25 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'zizo123';
 // Database Connection Helper
 let dbConnection = null;
 const connectDB = async () => {
-    if (!process.env.MONGODB_URI) return;
+    if (!process.env.MONGODB_URI) {
+        console.log("ℹ️  MongoDB Atlas: Not configured. Using local JSON storage (data/*.json).");
+        return;
+    }
+    if (process.env.MONGODB_URI.includes('<db_username>') || process.env.MONGODB_URI.includes('<db_password>')) {
+        console.log("⚠️  MongoDB Atlas: Found placeholder '<db_username>' or '<db_password>' in .env!");
+        console.log("👉 Please replace <db_username> and <db_password> in .env with your Atlas database user credentials.");
+        console.log("📁 Currently using local JSON storage (data/*.json).");
+        return;
+    }
     if (dbConnection && mongoose.connection.readyState === 1) return;
     try {
+        console.log("🔄 Connecting to MongoDB Atlas...");
         dbConnection = await mongoose.connect(process.env.MONGODB_URI);
-        console.log("Connected to MongoDB successfully!");
+        const dbName = mongoose.connection.name || 'test';
+        console.log(`✅ MongoDB Atlas Connected Successfully! (Database: ${dbName})`);
     } catch (err) {
-        console.error("MongoDB Connection Error:", err);
+        console.error("❌ MongoDB Atlas Connection Error:", err.message);
+        console.log("📁 Falling back to local JSON storage (data/*.json).");
     }
 };
 
@@ -51,8 +171,9 @@ const ProjectSchema = new mongoose.Schema({
     image: String,
     tags: [String],
     demoLink: String,
-    githubLink: String
-});
+    githubLink: String,
+    order: { type: Number, default: 0 }
+}, { strict: false });
 const Project = mongoose.model('Project', ProjectSchema);
 
 const SkillSchema = new mongoose.Schema({
@@ -73,6 +194,27 @@ const MessageSchema = new mongoose.Schema({
 });
 const Message = mongoose.model('Message', MessageSchema);
 
+const ServiceSchema = new mongoose.Schema({
+    id: String,
+    title: String,
+    desc: String,
+    icon: String,
+    tags: [String]
+}, { strict: false });
+const Service = mongoose.model('Service', ServiceSchema);
+
+const PhilosophySchema = new mongoose.Schema({
+    id: String,
+    icon: String,
+    title: String,
+    tagline: String,
+    desc: String,
+    points: [String],
+    metrics: [{ label: String, val: String }],
+    highlight: String
+}, { strict: false });
+const Philosophy = mongoose.model('Philosophy', PhilosophySchema);
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -89,18 +231,37 @@ app.use('/api', (req, res, next) => {
     next();
 });
 
-app.use(express.static(path.join(__dirname)));
+// Static file serving: React frontend dist & Frontend public assets/admin
+const FRONTEND_DIST = path.join(__dirname, 'frontend/dist');
+const FRONTEND_PUBLIC = path.join(__dirname, 'frontend/public');
+
+if (fs.existsSync(FRONTEND_DIST)) {
+    app.use(express.static(FRONTEND_DIST));
+}
+if (fs.existsSync(FRONTEND_PUBLIC)) {
+    app.use(express.static(FRONTEND_PUBLIC));
+}
+
+// Serve assets folder
+const ASSETS_DIR = fs.existsSync(path.join(FRONTEND_PUBLIC, 'assets'))
+    ? path.join(FRONTEND_PUBLIC, 'assets')
+    : path.join(__dirname, 'assets');
+app.use('/assets', express.static(ASSETS_DIR));
 
 // Ensure data folder exists (Local fallback)
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = fs.existsSync(path.join(__dirname, 'data'))
+    ? path.join(__dirname, 'data')
+    : (fs.existsSync(path.join(__dirname, 'backend/data')) ? path.join(__dirname, 'backend/data') : path.join(__dirname, '../data'));
 if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR);
+    fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
 const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
 const PROFILE_FILE = path.join(DATA_DIR, 'profile.json');
 const SKILLS_FILE = path.join(DATA_DIR, 'skills.json');
 const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
+const SERVICES_FILE = path.join(DATA_DIR, 'services.json');
+const PHILOSOPHY_FILE = path.join(DATA_DIR, 'philosophy.json');
 
 // --- SEED SECTIONS ---
 const initialProjects = [
@@ -333,13 +494,12 @@ app.post('/api/profile/upload-cv', async (req, res) => {
         }
 
         const buffer = Buffer.from(matches[2], 'base64');
-        const assetsDir = path.join(__dirname, 'assets');
-        if (!fs.existsSync(assetsDir)) {
-            fs.mkdirSync(assetsDir);
+        if (!fs.existsSync(ASSETS_DIR)) {
+            fs.mkdirSync(ASSETS_DIR, { recursive: true });
         }
 
-        fs.writeFileSync(path.join(assetsDir, 'resume.pdf'), buffer);
-        res.json({ success: true, message: "CV uploaded to local storage successfully." });
+        fs.writeFileSync(path.join(ASSETS_DIR, 'resume.pdf'), buffer);
+        res.json({ success: true, message: "CV uploaded to storage successfully." });
     } catch (err) {
         console.error("Error saving CV file:", err);
         res.status(500).json({ success: false, message: "Failed to write PDF file." });
@@ -364,7 +524,7 @@ app.get('/api/profile/download-cv', async (req, res) => {
             }
         }
 
-        const localPath = path.join(__dirname, 'assets', 'resume.pdf');
+        const localPath = path.join(ASSETS_DIR, 'resume.pdf');
         if (fs.existsSync(localPath)) {
             res.set({
                 'Content-Type': 'application/pdf',
@@ -437,12 +597,12 @@ app.get('/api/projects', async (req, res) => {
     try {
         if (process.env.MONGODB_URI) {
             await connectDB();
-            let projects = await Project.find();
+            let projects = await Project.find().sort({ order: 1, _id: 1 });
             if (projects.length === 0) {
                 const defaultProjects = readJSON(PROJECTS_FILE) || [];
                 if (defaultProjects.length > 0) {
-                    await Project.insertMany(defaultProjects);
-                    projects = await Project.find();
+                    await Project.insertMany(defaultProjects.map((p, idx) => ({ ...p, order: idx })));
+                    projects = await Project.find().sort({ order: 1, _id: 1 });
                 }
             }
             // Map _id to id
@@ -474,12 +634,27 @@ app.post('/api/projects/upload-image', async (req, res) => {
     }
 
     try {
+        // 1. Cloudinary upload if configured
+        if (cloudinary && (process.env.CLOUDINARY_URL || process.env.CLOUDINARY_CLOUD_NAME)) {
+            try {
+                const uploadRes = await cloudinary.uploader.upload(fileData, {
+                    folder: 'zizo_portfolio',
+                    resource_type: 'auto'
+                });
+                console.log("Image uploaded to Cloudinary:", uploadRes.secure_url);
+                return res.json({ success: true, imageUrl: uploadRes.secure_url });
+            } catch (cloudErr) {
+                console.error("Cloudinary upload failed, falling back to database/local:", cloudErr.message);
+            }
+        }
+
+        // 2. MongoDB storage if connected
         if (process.env.MONGODB_URI) {
             // Under MongoDB, return the base64 string directly so it is stored in the Project document
             return res.json({ success: true, imageUrl: fileData });
         }
 
-        // Local filesystem fallback
+        // 3. Local filesystem fallback
         const matches = fileData.match(/^data:image\/([A-Za-z0-9-+]+);base64,(.+)$/);
         if (!matches || matches.length !== 3) {
             // If it's already a URL or doesn't match base64 format, return it back
@@ -490,7 +665,7 @@ app.post('/api/projects/upload-image', async (req, res) => {
         const buffer = Buffer.from(matches[2], 'base64');
         
         // Ensure assets/uploads directory exists
-        const uploadsDir = path.join(__dirname, 'assets', 'uploads');
+        const uploadsDir = path.join(ASSETS_DIR, 'uploads');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }
@@ -531,6 +706,8 @@ app.post('/api/projects', async (req, res) => {
     try {
         if (process.env.MONGODB_URI) {
             await connectDB();
+            const count = await Project.countDocuments();
+            newProjectData.order = count;
             const project = new Project(newProjectData);
             await project.save();
             const o = project.toObject();
@@ -541,6 +718,7 @@ app.post('/api/projects', async (req, res) => {
         const projects = readJSON(PROJECTS_FILE);
         const newProject = {
             id: Date.now().toString(),
+            order: projects.length,
             ...newProjectData
         };
         projects.push(newProject);
@@ -548,6 +726,68 @@ app.post('/api/projects', async (req, res) => {
             res.status(201).json({ success: true, project: newProject });
         } else {
             res.status(500).json({ success: false, message: "Failed to save project." });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Reorder Projects Route (Controls which project appears first, second, etc.)
+app.put('/api/projects/reorder', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    const { projectIds } = req.body;
+    if (!Array.isArray(projectIds)) {
+        return res.status(400).json({ success: false, message: "projectIds array is required." });
+    }
+
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            const bulkOps = projectIds.map((id, index) => {
+                const isObjectId = mongoose.Types.ObjectId.isValid(id);
+                return {
+                    updateOne: {
+                        filter: isObjectId ? { _id: id } : { id: id },
+                        update: { $set: { order: index } }
+                    }
+                };
+            });
+
+            if (bulkOps.length > 0) {
+                await Project.bulkWrite(bulkOps);
+            }
+
+            const updatedProjects = await Project.find().sort({ order: 1, _id: 1 });
+            const mapped = updatedProjects.map(p => {
+                const o = p.toObject();
+                o.id = o._id.toString();
+                return o;
+            });
+            return res.json({ success: true, projects: mapped });
+        }
+
+        let projects = readJSON(PROJECTS_FILE) || [];
+        const projectMap = new Map(projects.map(p => [p.id, p]));
+        const reordered = [];
+
+        for (const id of projectIds) {
+            if (projectMap.has(id)) {
+                reordered.push(projectMap.get(id));
+                projectMap.delete(id);
+            }
+        }
+        for (const p of projectMap.values()) {
+            reordered.push(p);
+        }
+
+        if (writeJSON(PROJECTS_FILE, reordered)) {
+            res.json({ success: true, projects: reordered });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to save project reordering." });
         }
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -644,7 +884,128 @@ app.delete('/api/projects/:id', async (req, res) => {
     }
 });
 
-// 5. Messages Routes (Contact Form)
+// 5. Technical Services Routes
+app.get('/api/services', async (req, res) => {
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            let services = await Service.find();
+            if (services.length === 0) {
+                const defaultServices = readJSON(SERVICES_FILE) || [];
+                if (defaultServices.length > 0) {
+                    await Service.insertMany(defaultServices);
+                    services = await Service.find();
+                }
+            }
+            const mapped = services.map(s => {
+                const o = s.toObject();
+                o.id = o.id || o._id.toString();
+                return o;
+            });
+            return res.json(mapped);
+        }
+
+        const services = readJSON(SERVICES_FILE) || [];
+        res.json(services);
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.put('/api/services', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    const updatedServices = req.body;
+    if (!Array.isArray(updatedServices)) {
+        return res.status(400).json({ success: false, message: "Services payload must be an array." });
+    }
+
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            await Service.deleteMany({});
+            await Service.insertMany(updatedServices);
+            writeJSON(SERVICES_FILE, updatedServices);
+            return res.json({ success: true, services: updatedServices });
+        }
+
+        if (writeJSON(SERVICES_FILE, updatedServices)) {
+            res.json({ success: true, services: updatedServices });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to write services updates." });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 6. Engineering Philosophy Routes
+app.get('/api/philosophy', async (req, res) => {
+    try {
+        const defaultPhilosophy = readJSON(PHILOSOPHY_FILE) || [];
+        const defaultPhilMap = new Map(defaultPhilosophy.map(p => [p.id, p]));
+
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            let philosophy = await Philosophy.find();
+            if (philosophy.length === 0) {
+                if (defaultPhilosophy.length > 0) {
+                    await Philosophy.insertMany(defaultPhilosophy);
+                    philosophy = await Philosophy.find();
+                }
+            }
+            const mapped = philosophy.map(p => {
+                const o = p.toObject();
+                o.id = o.id || o._id.toString();
+                const fallback = defaultPhilMap.get(o.id) || {};
+                if (!o.points || !o.points.length) o.points = fallback.points || [];
+                if (!o.metrics || !o.metrics.length) o.metrics = fallback.metrics || [];
+                if (!o.tagline) o.tagline = fallback.tagline || '';
+                return o;
+            });
+            return res.json(mapped);
+        }
+
+        res.json(defaultPhilosophy);
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.put('/api/philosophy', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    const updatedPhilosophy = req.body;
+    if (!Array.isArray(updatedPhilosophy)) {
+        return res.status(400).json({ success: false, message: "Philosophy payload must be an array." });
+    }
+
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            await Philosophy.deleteMany({});
+            await Philosophy.insertMany(updatedPhilosophy);
+            writeJSON(PHILOSOPHY_FILE, updatedPhilosophy);
+            return res.json({ success: true, philosophy: updatedPhilosophy });
+        }
+
+        if (writeJSON(PHILOSOPHY_FILE, updatedPhilosophy)) {
+            res.json({ success: true, philosophy: updatedPhilosophy });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to write philosophy updates." });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 7. Messages Routes (Contact Form)
 app.post('/api/messages', async (req, res) => {
     const { name, email, message } = req.body;
     if (!name || !email || !message) {
@@ -665,6 +1026,12 @@ app.post('/api/messages', async (req, res) => {
             await msg.save();
             const o = msg.toObject();
             o.id = o._id.toString();
+
+            // Send instant email notification to personal inbox
+            sendContactNotificationEmail(newMessageData).catch(err => {
+                console.error("Async email notification error:", err.message);
+            });
+
             return res.status(201).json({ success: true, message: o });
         }
 
@@ -676,6 +1043,11 @@ app.post('/api/messages', async (req, res) => {
         };
         messages.push(newMessage);
         if (writeJSON(MESSAGES_FILE, messages)) {
+            // Send instant email notification to personal inbox
+            sendContactNotificationEmail(newMessageData).catch(err => {
+                console.error("Async email notification error:", err.message);
+            });
+
             res.status(201).json({ success: true, message: newMessage });
         } else {
             res.status(500).json({ success: false, message: "Failed to save message." });
@@ -747,22 +1119,50 @@ app.delete('/api/messages/:id', async (req, res) => {
     }
 });
 
+// Health check API endpoint
+app.get('/api', (req, res) => {
+    res.json({
+        status: 'online',
+        service: 'AbdElaziz Portfolio API (Zizo.dev)',
+        version: '1.0.0',
+        database: process.env.MONGODB_URI ? 'MongoDB Atlas' : 'Local JSON'
+    });
+});
+
 app.get('*', (req, res) => {
+    if (req.path === '/admin' || req.path === '/admin.html') {
+        const adminPath = fs.existsSync(path.join(FRONTEND_DIST, 'admin.html'))
+            ? path.join(FRONTEND_DIST, 'admin.html')
+            : (fs.existsSync(path.join(FRONTEND_PUBLIC, 'admin.html'))
+                ? path.join(FRONTEND_PUBLIC, 'admin.html')
+                : path.join(__dirname, 'admin.html'));
+        if (fs.existsSync(adminPath)) {
+            return res.sendFile(adminPath);
+        }
+        return res.status(404).send('Admin panel not found.');
+    }
     if (req.path.includes('.') || req.path.startsWith('/assets/') || req.path.startsWith('/data/')) {
         return res.status(404).send('Not Found');
     }
-    res.sendFile(path.join(__dirname, 'index.html'));
+    if (fs.existsSync(path.join(FRONTEND_DIST, 'index.html'))) {
+        return res.sendFile(path.join(FRONTEND_DIST, 'index.html'));
+    }
+    if (fs.existsSync(path.join(FRONTEND_PUBLIC, 'index.html'))) {
+        return res.sendFile(path.join(FRONTEND_PUBLIC, 'index.html'));
+    }
+    res.status(404).send('Application build not found. Run npm run build.');
 });
 
 // Start Server
-if (!process.env.VERCEL) {
-    app.listen(PORT, () => {
+if (!process.env.VERCEL && require.main === module) {
+    app.listen(PORT, '0.0.0.0', async () => {
         console.log(`=================================================`);
         console.log(`  AbdElaziz's Portfolio Server Running!`);
         console.log(`  Local Address:   http://localhost:${PORT}`);
         console.log(`  Admin Panel:     http://localhost:${PORT}/admin.html`);
         console.log(`  Access from LAN: http://<your-ip>:${PORT}`);
         console.log(`=================================================`);
+        await connectDB();
     });
 }
 

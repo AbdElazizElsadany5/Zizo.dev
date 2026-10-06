@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "icon": "code-2",
+    "title": "Full-Stack Web Excellence",
+    "desc": "Building end-to-end web experiences that blend stunning visuals with rock-solid engineering. I bridge the gap between creative design and technical performance.",
+    "tags": ["End-to-End", "Next.js & React", "Node.js"]
+  },
+  {
+    "id": "2",
+    "icon": "palette",
+    "title": "Premium Frontend Design",
+    "desc": "Crafting immersive, 'Wow-factor' interfaces using modern technologies. Focusing on smooth animations, responsive layouts, and user-centric aesthetics.",
+    "tags": ["Framer Motion", "Tailwind CSS", "60 FPS UI"]
+  },
+  {
+    "id": "3",
+    "icon": "server",
+    "title": "High-Performance Backend",
+    "desc": "Architecting robust server-side systems that scale. From database optimization to complex API structures, ensuring speed and reliability is paramount.",
+    "tags": ["REST & GraphQL", "MongoDB / SQL", "High Concurrency"]
+  },
+  {
+    "id": "4",
+    "icon": "sparkles",
+    "title": "Custom Web Solutions",
+    "desc": "Delivering tailored web applications that solve real problems. Whether it's a platform, a tool, or a marketplace, I turn concepts into deployed reality.",
+    "tags": ["SaaS Architecture", "Cloud APIs", "Scalable Platforms"]
+  }
+]

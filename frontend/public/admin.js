@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adminDashboard.style.display = 'block';
             loadAdminProjects();
             loadAdminProfile();
+            loadAdminServices();
             loadAdminSkills();
             loadAdminMessages();
         } else {
@@ -158,8 +159,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        projectsListTable.innerHTML = projects.map(proj => `
-            <div class="list-item-card">
+        projectsListTable.innerHTML = projects.map((proj, idx) => `
+            <div class="list-item-card" data-project-id="${proj.id}">
+                <div class="project-order-control" title="Enter rank number (1 - ${projects.length}) and press Enter to reorder">
+                    <span class="order-prefix">#</span>
+                    <input type="number" 
+                           class="project-order-input" 
+                           data-index="${idx}" 
+                           value="${idx + 1}" 
+                           min="1" 
+                           max="${projects.length}" 
+                           title="Change order rank (1 - ${projects.length})">
+                </div>
                 <img src="${proj.image}" alt="${proj.title}" class="item-img-preview" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'">
                 <div class="item-info">
                     <h4 class="item-title">${proj.title}</h4>
@@ -180,7 +191,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         lucide.createIcons();
 
-        // Attach event listeners
+        // Direct numeric order change listener
+        document.querySelectorAll('.project-order-input').forEach(input => {
+            // Auto-select value on focus for instant typing
+            input.addEventListener('focus', () => {
+                input.select();
+            });
+
+            const applyOrderChange = () => {
+                const currentIdx = parseInt(input.getAttribute('data-index'), 10);
+                const rawVal = input.value.trim();
+                let targetRank = parseInt(rawVal, 10);
+
+                if (isNaN(targetRank)) {
+                    input.value = currentIdx + 1;
+                    return;
+                }
+
+                // Clamp between 1 and allProjects.length
+                targetRank = Math.max(1, Math.min(allProjects.length, targetRank));
+                const targetIdx = targetRank - 1;
+
+                if (targetIdx !== currentIdx) {
+                    reorderProjects(currentIdx, targetIdx);
+                } else {
+                    input.value = currentIdx + 1;
+                }
+            };
+
+            input.addEventListener('change', applyOrderChange);
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    input.blur();
+                }
+            });
+        });
+
         document.querySelectorAll('.btn-edit-action').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.getAttribute('data-id');
@@ -195,6 +243,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteProject(id);
             });
         });
+    }
+
+    async function reorderProjects(fromIdx, toIdx) {
+        const item = allProjects.splice(fromIdx, 1)[0];
+        allProjects.splice(toIdx, 0, item);
+        renderAdminProjects(allProjects);
+
+        const token = localStorage.getItem('zizo_admin_token');
+        try {
+            const res = await fetch('/api/projects/reorder', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                body: JSON.stringify({ projectIds: allProjects.map(p => p.id) })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                alert('Failed to save project order.');
+                loadAdminProjects();
+            }
+        } catch (err) {
+            console.error('Reorder error:', err);
+            loadAdminProjects();
+        }
     }
 
     function updateProjectImagePreview(urlOrBase64) {
@@ -771,5 +845,232 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (refreshMessagesBtn) {
         refreshMessagesBtn.addEventListener('click', loadAdminMessages);
+    }
+
+    // --- Tab: Services & Engineering Philosophy Logic ---
+    let allAdminServices = [];
+    let allAdminPhilosophy = [];
+
+    const saveServicesBtn = document.getElementById('save-services-btn');
+    const savePhilosophyBtn = document.getElementById('save-philosophy-btn');
+    const servicesStatus = document.getElementById('services-status');
+    const philosophyStatus = document.getElementById('philosophy-status');
+
+    async function loadAdminServices() {
+        const servicesList = document.getElementById('services-editor-list');
+        const philosophyList = document.getElementById('philosophy-editor-list');
+
+        try {
+            const [servRes, philRes] = await Promise.all([
+                fetch(`/api/services?t=${Date.now()}`),
+                fetch(`/api/philosophy?t=${Date.now()}`)
+            ]);
+
+            allAdminServices = await servRes.json();
+            allAdminPhilosophy = await philRes.json();
+
+            renderServicesEditor(allAdminServices);
+            renderPhilosophyEditor(allAdminPhilosophy);
+        } catch (err) {
+            if (servicesList) servicesList.innerHTML = `<div class="loading-state" style="color:#ef4444;">Failed to load services data.</div>`;
+            if (philosophyList) philosophyList.innerHTML = `<div class="loading-state" style="color:#ef4444;">Failed to load philosophy data.</div>`;
+        }
+    }
+
+    function renderServicesEditor(services) {
+        const container = document.getElementById('services-editor-list');
+        if (!container) return;
+
+        if (!Array.isArray(services) || services.length === 0) {
+            container.innerHTML = `<div class="loading-state">No services configured.</div>`;
+            return;
+        }
+
+        container.innerHTML = services.map((s, idx) => `
+            <div class="editor-block-card" data-service-idx="${idx}">
+                <div class="editor-block-header">
+                    <span class="editor-block-title">
+                        <i data-lucide="code-2"></i> Card ${idx + 1}: ${escapeHTML(s.title)}
+                    </span>
+                    <span class="badge" style="background: rgba(6,182,212,0.12); color:#06b6d4; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-family: var(--font-mono);">
+                        ${escapeHTML(s.icon || 'code-2')}
+                    </span>
+                </div>
+                <div class="editor-block-grid">
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Service Title</label>
+                        <input type="text" class="service-title-input" value="${escapeHTML(s.title || '')}" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Icon Name (e.g. code-2, palette, server, sparkles)</label>
+                        <input type="text" class="service-icon-input" value="${escapeHTML(s.icon || 'code-2')}" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Description</label>
+                        <textarea class="service-desc-input" rows="3" required>${escapeHTML(s.desc || '')}</textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" class="service-tags-input" value="${escapeHTML(Array.isArray(s.tags) ? s.tags.join(', ') : (s.tags || ''))}">
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        lucide.createIcons();
+    }
+
+    function renderPhilosophyEditor(philosophy) {
+        const container = document.getElementById('philosophy-editor-list');
+        if (!container) return;
+
+        if (!Array.isArray(philosophy) || philosophy.length === 0) {
+            container.innerHTML = `<div class="loading-state">No philosophy principles configured.</div>`;
+            return;
+        }
+
+        container.innerHTML = philosophy.map((p, idx) => `
+            <div class="editor-block-card" data-phil-idx="${idx}">
+                <div class="editor-block-header">
+                    <span class="editor-block-title">
+                        <i data-lucide="sparkles"></i> Principle 0${idx + 1}: ${escapeHTML(p.title)}
+                    </span>
+                    <span class="badge" style="background: rgba(6,182,212,0.12); color:#38bdf8; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-family: var(--font-mono);">
+                        ID: ${escapeHTML(p.id)}
+                    </span>
+                </div>
+                <div class="editor-block-grid">
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Principle Title</label>
+                        <input type="text" class="phil-title-input" value="${escapeHTML(p.title || '')}" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Tagline Subtitle</label>
+                        <input type="text" class="phil-tagline-input" value="${escapeHTML(p.tagline || '')}" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label>Detailed Architectural Description</label>
+                        <textarea class="phil-desc-input" rows="3" required>${escapeHTML(p.desc || '')}</textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Key Architectural Points (one point per line)</label>
+                        <textarea class="phil-points-input" rows="3">${escapeHTML(Array.isArray(p.points) ? p.points.join('\n') : '')}</textarea>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        lucide.createIcons();
+    }
+
+    // Save Technical Services Handler
+    if (saveServicesBtn) {
+        saveServicesBtn.addEventListener('click', async () => {
+            const cards = document.querySelectorAll('#services-editor-list .editor-block-card');
+            const updated = [];
+
+            cards.forEach((card, idx) => {
+                const title = card.querySelector('.service-title-input').value.trim();
+                const icon = card.querySelector('.service-icon-input').value.trim() || 'code-2';
+                const desc = card.querySelector('.service-desc-input').value.trim();
+                const rawTags = card.querySelector('.service-tags-input').value.trim();
+                const tags = rawTags ? rawTags.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+                updated.push({
+                    id: String(idx + 1),
+                    icon,
+                    title,
+                    desc,
+                    tags
+                });
+            });
+
+            const token = localStorage.getItem('zizo_admin_token');
+            servicesStatus.className = 'form-status';
+            servicesStatus.textContent = 'Saving services to database...';
+
+            try {
+                const response = await fetch('/api/services', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify(updated)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    servicesStatus.className = 'form-status success';
+                    servicesStatus.textContent = 'Technical Services updated and synced successfully!';
+                    setTimeout(() => {
+                        servicesStatus.className = 'form-status';
+                        servicesStatus.textContent = '';
+                    }, 4000);
+                } else {
+                    servicesStatus.className = 'form-status error';
+                    servicesStatus.textContent = data.message || 'Failed to update services.';
+                }
+            } catch (err) {
+                servicesStatus.className = 'form-status error';
+                servicesStatus.textContent = 'Server response error.';
+            }
+        });
+    }
+
+    // Save Engineering Philosophy Handler
+    if (savePhilosophyBtn) {
+        savePhilosophyBtn.addEventListener('click', async () => {
+            const cards = document.querySelectorAll('#philosophy-editor-list .editor-block-card');
+            const updated = [];
+
+            cards.forEach((card, idx) => {
+                const orig = allAdminPhilosophy[idx] || {};
+                const title = card.querySelector('.phil-title-input').value.trim();
+                const tagline = card.querySelector('.phil-tagline-input').value.trim();
+                const desc = card.querySelector('.phil-desc-input').value.trim();
+                const pointsRaw = card.querySelector('.phil-points-input').value.trim();
+                const points = pointsRaw ? pointsRaw.split('\n').map(p => p.trim()).filter(Boolean) : (orig.points || []);
+
+                updated.push({
+                    ...orig,
+                    title,
+                    tagline,
+                    desc,
+                    points
+                });
+            });
+
+            const token = localStorage.getItem('zizo_admin_token');
+            philosophyStatus.className = 'form-status';
+            philosophyStatus.textContent = 'Saving philosophy to database...';
+
+            try {
+                const response = await fetch('/api/philosophy', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify(updated)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    philosophyStatus.className = 'form-status success';
+                    philosophyStatus.textContent = 'Engineering Philosophy updated and synced successfully!';
+                    setTimeout(() => {
+                        philosophyStatus.className = 'form-status';
+                        philosophyStatus.textContent = '';
+                    }, 4000);
+                } else {
+                    philosophyStatus.className = 'form-status error';
+                    philosophyStatus.textContent = data.message || 'Failed to update philosophy.';
+                }
+            } catch (err) {
+                philosophyStatus.className = 'form-status error';
+                philosophyStatus.textContent = 'Server response error.';
+            }
+        });
     }
 });

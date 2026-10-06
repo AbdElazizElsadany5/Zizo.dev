@@ -1,5 +1,22 @@
+# Dependencies
 node_modules/
+*/node_modules/
+
+# Production build outputs
+frontend/dist/
+dist/
+.vercel/
+
+# Environment variables & local secrets
 .env
+.env.local
+.env.*.local
+*.env
+
+# Local database sensitive messages
+data/messages.json
+
+# OS files
 .DS_Store
 Thumbs.db
-data/messages.json
+*.log

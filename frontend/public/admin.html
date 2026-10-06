@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AbdElaziz | Portfolio Admin Manager</title>
-    <!-- Favicon -->
+    <!-- Favicon (Modern Circular Monogram) -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,6 +64,9 @@
             </button>
             <button class="tab-btn" data-tab="profile-tab">
                 <i data-lucide="user"></i> Profile Details
+            </button>
+            <button class="tab-btn" data-tab="services-tab">
+                <i data-lucide="layers"></i> Services &amp; Philosophy
             </button>
             <button class="tab-btn" data-tab="skills-tab">
                 <i data-lucide="cpu"></i> Technical Skills
@@ -160,7 +165,7 @@
                         <h2 class="card-title">
                             <i data-lucide="database" class="text-gradient"></i> Database Projects
                         </h2>
-                        <p class="card-subtitle">List of projects served by `/api/projects` endpoint.</p>
+                        <p class="card-subtitle">Change rank numbers (#1, #2, ...) directly to move projects instantly.</p>
                         
                         <div class="projects-list-table" id="projects-list-table">
                             <!-- Filled dynamically -->
@@ -283,6 +288,61 @@
                     </div>
                 </form>
                 <div id="profile-status" class="form-status"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Services & Engineering Philosophy -->
+        <div class="tab-panel" id="services-tab">
+            <div class="dashboard-grid">
+                <!-- Left: 4 Technical Services -->
+                <section class="form-section">
+                    <div class="card shadow-lg">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h2 class="card-title" style="margin-bottom: 0;">
+                                <i data-lucide="code-2" class="text-gradient"></i> Technical Services
+                            </h2>
+                            <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">4 Cards</span>
+                        </div>
+                        <p class="card-subtitle">Edit the four core technical offerings displayed on your site.</p>
+
+                        <div id="services-editor-list" style="display: flex; flex-direction: column; gap: 18px; margin-top: 20px;">
+                            <!-- Injected dynamically -->
+                            <div class="loading-state"><span class="pulse-dot"></span> Loading services...</div>
+                        </div>
+
+                        <div class="form-actions-row" style="margin-top: 24px;">
+                            <button type="button" class="btn btn-primary" id="save-services-btn">
+                                <i data-lucide="save"></i> Save Technical Services
+                            </button>
+                        </div>
+                        <div id="services-status" class="form-status"></div>
+                    </div>
+                </section>
+
+                <!-- Right: 3 Engineering Philosophy Pillars -->
+                <section class="list-section">
+                    <div class="card shadow-lg">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h2 class="card-title" style="margin-bottom: 0;">
+                                <i data-lucide="sparkles" class="text-gradient"></i> Engineering Philosophy
+                            </h2>
+                            <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">3 Pillars</span>
+                        </div>
+                        <p class="card-subtitle">Edit the sticky scroll showcase principles (Scalability, Performance, Security).</p>
+
+                        <div id="philosophy-editor-list" style="display: flex; flex-direction: column; gap: 18px; margin-top: 20px;">
+                            <!-- Injected dynamically -->
+                            <div class="loading-state"><span class="pulse-dot"></span> Loading philosophy...</div>
+                        </div>
+
+                        <div class="form-actions-row" style="margin-top: 24px;">
+                            <button type="button" class="btn btn-primary" id="save-philosophy-btn">
+                                <i data-lucide="save"></i> Save Engineering Philosophy
+                            </button>
+                        </div>
+                        <div id="philosophy-status" class="form-status"></div>
+                    </div>
+                </section>
             </div>
         </div>
 

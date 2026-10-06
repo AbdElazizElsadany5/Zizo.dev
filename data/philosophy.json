@@ -1,0 +1,56 @@
+[
+  {
+    "id": "scalability",
+    "icon": "trending-up",
+    "title": "Scalability First",
+    "tagline": "Architecture That Expands With Your Growth",
+    "desc": "Architecting systems that grow effortlessly from 100 to 1 million users without a rewrite.",
+    "points": [
+      "Modular decoupled services & clean separation of concerns",
+      "Stateless API design ready for auto-scaling containers",
+      "Optimized database schemas with intelligent indexing",
+      "Load-balanced architecture handling high-traffic spikes"
+    ],
+    "metrics": [
+      { "label": "User Capacity", "val": "1M+" },
+      { "label": "Code Architecture", "val": "Modular" },
+      { "label": "Rewrites Needed", "val": "0" }
+    ]
+  },
+  {
+    "id": "performance",
+    "icon": "zap",
+    "title": "Performance",
+    "tagline": "Ultra-Low Latency & Instant Response",
+    "desc": "Every millisecond counts. Optimizing database queries and API response times for instant feedback.",
+    "points": [
+      "Sub-second page rendering & asset streaming",
+      "Aggressive database query profiling & indexing",
+      "Distributed in-memory caching layers",
+      "Lightweight bundles with zero bloat or render lag"
+    ],
+    "metrics": [
+      { "label": "Target TTFB", "val": "< 80ms" },
+      { "label": "Lighthouse", "val": "100%" },
+      { "label": "Frame Rate", "val": "60 FPS" }
+    ]
+  },
+  {
+    "id": "security",
+    "icon": "shield-check",
+    "title": "Security",
+    "tagline": "Zero-Trust Engineering & Data Protection",
+    "desc": "Zero-trust architecture. Implementing robust authentication and authorization from day one.",
+    "points": [
+      "Cryptographically signed JWT sessions & secure cookies",
+      "Strict input validation, sanitization & SQLi/XSS defense",
+      "Role-Based Access Control (RBAC) across all endpoints",
+      "Rate limiting & DDoS abuse prevention"
+    ],
+    "metrics": [
+      { "label": "Architecture", "val": "Zero-Trust" },
+      { "label": "Encryption", "val": "AES-256" },
+      { "label": "Auth Flow", "val": "RBAC" }
+    ]
+  }
+]

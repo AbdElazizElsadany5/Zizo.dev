@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "AbdElaziz Elsadany",
+  "preferredName": "Zizo Elsadany",
+  "arabicName": "عبد العزيز السعدني",
+  "popularNameArabic": "زيزو السعدني",
+  "alternativeSpellingsArabic": [
+    "عبد العزيز السعدني",
+    "عبدالعزيز السعدني",
+    "زيزو السعدني",
+    "زيزو",
+    "عبد العزيز",
+    "عبدالعزيز",
+    "السعدني",
+    "زيزو ديف"
+  ],
+  "titles": {
+    "softwareEngineer": {
+      "en": "Software Engineer",
+      "ar": "سوفت وير انجنير / مهندس برمجيات"
+    },
+    "frontendDeveloper": {
+      "en": "Frontend Developer",
+      "ar": "فرونت ديفلوبر / فرونت اند ديفلوبر"
+    },
+    "backendDeveloper": {
+      "en": "Backend Developer",
+      "ar": "باك ديفلوبر / باك اند ديفلوبر"
+    },
+    "fullStack": {
+      "en": "Senior Full-Stack Architect",
+      "ar": "مطور ويب متكامل فول ستاك"
+    }
+  },
+  "bioArabic": "عبد العزيز السعدني (زيزو السعدني) هو سوفت وير انجنير (Software Engineer)، فرونت ديفلوبر (Frontend Developer)، باك ديفلوبر (Backend Developer) ومطور ويب متكامل في القاهرة، مصر. متخصص في بناء أنظمة وتطبيقات الويب الحديثة وحلول السوفت وير عالية الأداء بتصميمات استثنائية وسرعة فائقة.",
+  "bioEnglish": "AbdElaziz Elsadany (Zizo) is a Senior Software Engineer, Frontend Developer, and Backend Developer based in Cairo, Egypt. Specializing in high-performance web applications, React, Next.js, Node.js, and scalable cloud solutions.",
+  "canonicalUrl": "https://zizo.dev/",
+  "email": "zizoelsadany5@gmail.com",
+  "location": {
+    "city": "Cairo",
+    "country": "Egypt",
+    "countryCode": "EG"
+  },
+  "searchQueriesTargeted": [
+    "عبد العزيز السعدني",
+    "عبدالعزيز السعدني",
+    "زيزو السعدني",
+    "زيزو",
+    "سوفت وير انجنير",
+    "سوفت وير ديفلوبر",
+    "فرونت ديفلوبر",
+    "فرونت اند ديفلوبر",
+    "باك ديفلوبر",
+    "باك اند ديفلوبر",
+    "مهندس برمجيات",
+    "مطور برمجيات",
+    "مطور ويب",
+    "مطور برمجيات مصر",
+    "AbdElaziz Elsadany",
+    "Abdelaziz Elsadany",
+    "Zizo Elsadany",
+    "Zizo",
+    "Zizo Dev",
+    "zizo.dev",
+    "Software Engineer",
+    "Software Developer",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full-Stack Developer"
+  ],
+  "socialProfiles": {
+    "github": "https://github.com/zizoelsadany",
+    "linkedin": "https://linkedin.com/in/abd-elaziz-elsadany",
+    "twitter": "https://twitter.com/zizoelsadany"
+  },
+  "skills": [
+    "Software Engineering",
+    "Frontend Development",
+    "Backend Development",
+    "React.js",
+    "Next.js",
+    "Node.js",
+    "Express.js",
+    "MongoDB Atlas",
+    "Tailwind CSS",
+    "TypeScript",
+    "JavaScript",
+    "RESTful APIs",
+    "System Architecture",
+    "Web Performance Optimization"
+  ]
+}

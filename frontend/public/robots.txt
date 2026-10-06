@@ -1,0 +1,26 @@
+User-agent: Googlebot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: Applebot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /api/
+
+Sitemap: https://zizo.dev/sitemap.xml

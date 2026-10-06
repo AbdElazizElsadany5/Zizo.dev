@@ -1,4 +1,21 @@
-/* Admin Section Stylesheet */
+/* Admin Section Stylesheet - Electric Cyan & Dark Architecture Palette */
+:root {
+    --bg-color: #080b11;
+    --card-bg: rgba(13, 17, 28, 0.88);
+    --card-hover-bg: rgba(18, 25, 42, 0.95);
+    --border-color: rgba(6, 182, 212, 0.18);
+    --border-hover: rgba(6, 182, 212, 0.5);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-color: #06b6d4; /* Electric Cyan */
+    --accent-color-rgb: 6, 182, 212;
+    --accent-secondary: #38bdf8; /* Sky Blue */
+    --accent-secondary-rgb: 56, 189, 248;
+    --accent-glow: rgba(6, 182, 212, 0.15);
+    --accent-glow-strong: rgba(6, 182, 212, 0.35);
+}
+
 .admin-body-bg {
     background-color: var(--bg-color);
     min-height: 100vh;
@@ -10,25 +27,40 @@
 .login-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(3, 7, 18, 0.85);
-    backdrop-filter: blur(20px);
+    background: radial-gradient(circle at center, rgba(15, 23, 42, 0.92) 0%, rgba(3, 7, 18, 0.98) 100%);
+    backdrop-filter: blur(25px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
+    padding: 20px;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 .login-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    background: rgba(13, 17, 28, 0.95);
+    border: 1px solid rgba(6, 182, 212, 0.25);
     border-radius: 24px;
-    padding: 40px;
+    padding: 44px 36px;
     width: 100%;
     max-width: 420px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(6, 182, 212, 0.12);
     display: flex;
     flex-direction: column;
     gap: 24px;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #06b6d4, #3b82f6, #06b6d4);
 }
 
 .login-header {
@@ -36,24 +68,135 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .login-icon {
-    width: 48px;
-    height: 48px;
-    color: var(--accent-color);
-    margin-bottom: 8px;
+    width: 52px;
+    height: 52px;
+    color: #06b6d4;
+    padding: 12px;
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
 }
 
 .login-header h2 {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+    margin: 0;
 }
 
 .login-header p {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+    font-size: 0.88rem;
+    color: #94a3b8;
+    margin: 0;
+    line-height: 1.5;
+}
+
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#login-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+#login-form label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+#login-form input[type="password"] {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(8, 11, 17, 0.9);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 14px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#login-form input[type="password"]:focus {
+    border-color: #06b6d4;
+    background: rgba(13, 17, 28, 0.95);
+    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2), 0 0 15px rgba(6, 182, 212, 0.15);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0891b2 0%, #1d4ed8 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(6, 182, 212, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.form-status {
+    font-size: 0.85rem;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+    display: none;
+}
+
+.form-status:not(:empty) {
+    display: block;
+}
+
+.form-status.error {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.form-status.success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* Admin Dashboard Container */
@@ -600,3 +743,114 @@
     width: 14px;
     height: 14px;
 }
+
+/* --- Interactive Numeric Project Reordering --- */
+.project-order-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    border-radius: 8px;
+    padding: 3px 8px;
+    gap: 2px;
+    transition: all 0.2s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.project-order-control:hover,
+.project-order-control:focus-within {
+    background: rgba(6, 182, 212, 0.18);
+    border-color: #06b6d4;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+}
+
+.project-order-control .order-prefix {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #38bdf8;
+    font-family: var(--font-mono, monospace);
+    line-height: 1;
+}
+
+.project-order-input {
+    width: 38px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-align: center;
+    padding: 2px 0;
+    cursor: text;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+}
+
+.project-order-input:focus {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Remove default number arrows on webkit and firefox */
+.project-order-input::-webkit-outer-spin-button,
+.project-order-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.project-order-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* --- Service & Philosophy Editor Cards --- */
+.editor-block-card {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.editor-block-card:hover {
+    border-color: rgba(6, 182, 212, 0.45);
+    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.1);
+}
+
+.editor-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.editor-block-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.editor-block-title i {
+    color: #06b6d4;
+    width: 16px;
+    height: 16px;
+}
+
+.editor-block-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 640px) {
+    .editor-block-grid.two-cols {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
