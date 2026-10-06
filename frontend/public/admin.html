@@ -74,6 +74,12 @@
             <button class="tab-btn" data-tab="messages-tab">
                 <i data-lucide="mail"></i> Messages Inbox
             </button>
+            <button class="tab-btn" data-tab="analytics-tab">
+                <i data-lucide="bar-chart-3"></i> Visitors &amp; Searches
+            </button>
+            <button class="tab-btn" data-tab="settings-tab">
+                <i data-lucide="sliders"></i> Smooth Scroll Settings
+            </button>
         </div>
 
         <!-- Tab 1: Projects (Form + List Grid) -->
@@ -392,6 +398,253 @@
                         <span class="pulse-dot"></span> Loading inbox...
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Visitor Analytics & Searches -->
+        <div class="tab-panel" id="analytics-tab">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+                <!-- Header Card with Actions -->
+                <div class="card shadow-lg">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+                        <div>
+                            <h2 class="card-title">
+                                <i data-lucide="activity" class="text-gradient"></i> Visitors &amp; Search Queries
+                            </h2>
+                            <p class="card-subtitle">Real-time tracking of site traffic, visitor origins, search terms, and devices saved directly to database.</p>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="refresh-analytics-btn" class="btn btn-secondary btn-sm" style="padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                                <i data-lucide="refresh-cw" style="width:14px; height:14px;"></i> Refresh Data
+                            </button>
+                            <button id="clear-analytics-btn" class="btn btn-outline btn-sm" style="padding: 8px 14px; font-size: 0.85rem; color: #f87171; border-color: rgba(248,113,113,0.3); display: inline-flex; align-items: center; gap: 6px;">
+                                <i data-lucide="trash-2" style="width:14px; height:14px;"></i> Clear Logs
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="analytics-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px;">
+                        <div class="metric-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(6,182,212,0.2); border-radius: 16px; padding: 18px 20px;">
+                            <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Total Visits</span>
+                            <div id="stat-total-visits" style="font-size: 2rem; font-weight: 800; color: #f8fafc; font-family: 'JetBrains Mono', monospace; margin-top: 6px;">0</div>
+                        </div>
+                        <div class="metric-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(56,189,248,0.2); border-radius: 16px; padding: 18px 20px;">
+                            <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Unique Visitors</span>
+                            <div id="stat-unique-visitors" style="font-size: 2rem; font-weight: 800; color: #38bdf8; font-family: 'JetBrains Mono', monospace; margin-top: 6px;">0</div>
+                        </div>
+                        <div class="metric-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(168,85,247,0.2); border-radius: 16px; padding: 18px 20px;">
+                            <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Search Keywords Found</span>
+                            <div id="stat-search-count" style="font-size: 2rem; font-weight: 800; color: #c084fc; font-family: 'JetBrains Mono', monospace; margin-top: 6px;">0</div>
+                        </div>
+                        <div class="metric-card" style="background: rgba(15,23,42,0.6); border: 1px solid rgba(34,197,94,0.2); border-radius: 16px; padding: 18px 20px;">
+                            <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Desktop / Mobile Ratio</span>
+                            <div id="stat-device-ratio" style="font-size: 1.25rem; font-weight: 700; color: #4ade80; font-family: 'JetBrains Mono', monospace; margin-top: 10px;">0 / 0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target SEO Ranking Keywords Card -->
+                <div class="card shadow-lg" style="background: rgba(13, 17, 28, 0.95); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 20px; padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 18px;">
+                        <div>
+                            <h3 class="card-title" style="font-size: 1.25rem; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                                <i data-lucide="sparkles" class="text-gradient"></i> Target Ranking Keywords (الكلمات المفتاحية المعتمدة لظهور موقعك أول نتيجة)
+                            </h3>
+                            <p class="card-subtitle" style="margin-bottom: 0;">
+                                هذه هي الكلمات المفتاحية المدمجة في الـ SEO والـ JSON-LD Schema والتي تجعل موقعك يظهر <strong>النتيجة الأولى (#1)</strong> على Google و Bing بمجرد البحث بها.
+                            </p>
+                        </div>
+                        <span class="badge" style="background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); font-size: 0.8rem; padding: 4px 12px; border-radius: 9999px;">
+                            SEO Rank #1 Optimized
+                        </span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 14px;">
+                        <!-- Arabic Keywords Column -->
+                        <div style="background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px;">
+                            <div style="font-weight: 700; color: #38bdf8; font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span>🇪🇬 الكلمات العربية (Arabic Keywords)</span>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">عبد العزيز السعدني</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">عبدالعزيز السعدني</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">زيزو السعدني</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">زيزو ديف</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">عبد العزيز السعدني سوفت وير انجنير</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">زيزو السعدني فرونت اند</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem;">عبد العزيز السعدني فول ستاك</span>
+                            </div>
+                        </div>
+
+                        <!-- English Keywords Column -->
+                        <div style="background: rgba(15, 23, 42, 0.55); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px;">
+                            <div style="font-weight: 700; color: #38bdf8; font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                <span>🌐 الكلمات الإنجليزية (English Keywords)</span>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">AbdElaziz Elsadany</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">Abdelaziz Elsadany</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">Zizo Elsadany</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">zizo.dev</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">Zizo Dev</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">AbdElaziz Elsadany Portfolio</span>
+                                <span class="badge" style="background: rgba(6,182,212,0.12); color: #f8fafc; border: 1px solid rgba(6,182,212,0.3); padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-family: monospace;">AbdElaziz Elsadany Software Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two-Column Analytics: Search Queries + Top Referrers -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                    <!-- Search Queries -->
+                    <div class="card shadow-lg">
+                        <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 6px;">
+                            <i data-lucide="search" class="text-gradient"></i> Search Queries &amp; Keywords
+                        </h3>
+                        <p class="card-subtitle">Terms users searched when finding or browsing your portfolio.</p>
+                        <div id="analytics-searches-list" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Injected dynamically -->
+                            <div class="loading-state"><span class="pulse-dot"></span> Loading searches...</div>
+                        </div>
+                    </div>
+
+                    <!-- Top Referrers -->
+                    <div class="card shadow-lg">
+                        <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 6px;">
+                            <i data-lucide="globe" class="text-gradient"></i> Referral Sources
+                        </h3>
+                        <p class="card-subtitle">Websites, search engines, and direct links visitors came from.</p>
+                        <div id="analytics-referrers-list" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Injected dynamically -->
+                            <div class="loading-state"><span class="pulse-dot"></span> Loading referrers...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Visits Table -->
+                <div class="card shadow-lg">
+                    <h3 class="card-title" style="font-size: 1.15rem; margin-bottom: 6px;">
+                        <i data-lucide="list" class="text-gradient"></i> Recent Visitor Logs
+                    </h3>
+                    <p class="card-subtitle">Chronological record of the latest site visitors saved in database.</p>
+
+                    <div style="overflow-x: auto; margin-top: 18px;">
+                        <table class="analytics-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); color: #94a3b8; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <th style="padding: 12px 14px;">Date / Time</th>
+                                    <th style="padding: 12px 14px;">IP Address</th>
+                                    <th style="padding: 12px 14px;">Device &amp; OS</th>
+                                    <th style="padding: 12px 14px;">Browser</th>
+                                    <th style="padding: 12px 14px;">Referrer / Search</th>
+                                    <th style="padding: 12px 14px;">Page</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-visits-tbody">
+                                <!-- Injected dynamically -->
+                                <tr><td colspan="6" style="padding: 24px; text-align: center; color: #94a3b8;">Loading visit records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 6: Smooth Scroll & Animation Preferences -->
+        <div class="tab-panel" id="settings-tab">
+            <div class="card shadow-lg" style="max-width: 860px; margin: 0 auto;">
+                <div style="margin-bottom: 24px;">
+                    <h2 class="card-title">
+                        <i data-lucide="sliders" class="text-gradient"></i> Smooth Scroll &amp; Animation Controller
+                    </h2>
+                    <p class="card-subtitle">Turn smooth scroll and sticky lock effects on or off per section. When turned off, sections render in a clean, compact layout with immediate visibility and zero blank voids.</p>
+                </div>
+
+                <form id="settings-form">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Toggle 1: About Me Word-by-Word Scroll Reveal -->
+                        <div class="setting-toggle-card">
+                            <div class="setting-info">
+                                <div class="setting-title-row">
+                                    <span class="setting-title">About Me — Scroll Word Reveal</span>
+                                    <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">About</span>
+                                </div>
+                                <p class="setting-desc">
+                                    <strong>ON:</strong> Pinned viewport reveals text word-by-word with progressive illumination on scroll.<br>
+                                    <strong>OFF:</strong> Clean static layout with full immediate text visibility, standard padding, and zero empty space below.
+                                </p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-about-smooth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 2: Projects Section Sticky Scroll Showcase -->
+                        <div class="setting-toggle-card">
+                            <div class="setting-info">
+                                <div class="setting-title-row">
+                                    <span class="setting-title">Projects — Scroll-Driven Sticky Showcase</span>
+                                    <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">Projects</span>
+                                </div>
+                                <p class="setting-desc">
+                                    <strong>ON:</strong> Locks screen and automatically advances through projects as user scrolls down.<br>
+                                    <strong>OFF:</strong> Clean static card showcase with arrow/dot navigation and zero sticky height or blank voids below.
+                                </p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-projects-smooth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 3: Services & Philosophy Scroll Mode -->
+                        <div class="setting-toggle-card">
+                            <div class="setting-info">
+                                <div class="setting-title-row">
+                                    <span class="setting-title">Services &amp; Philosophy — Sticky Scroll Mode</span>
+                                    <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">Services</span>
+                                </div>
+                                <p class="setting-desc">
+                                    <strong>ON:</strong> Pinned principles showcase with scroll progression.<br>
+                                    <strong>OFF:</strong> Modern responsive side-by-side cards grid (Recommended for clean presentation).
+                                </p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-services-smooth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 4: Technical Skills Scroll Mode -->
+                        <div class="setting-toggle-card">
+                            <div class="setting-info">
+                                <div class="setting-title-row">
+                                    <span class="setting-title">Technical Skills — Sticky Scroll Mode</span>
+                                    <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px; border: 1px solid rgba(6,182,212,0.3);">Skills</span>
+                                </div>
+                                <p class="setting-desc">
+                                    <strong>ON:</strong> Category-by-category pinned scroll animation.<br>
+                                    <strong>OFF:</strong> Multi-column side-by-side grid of skill categories.
+                                </p>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-skills-smooth">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions-row" style="margin-top: 32px;">
+                        <button type="submit" class="btn btn-primary" id="save-settings-btn">
+                            <i data-lucide="save"></i> Save Animation Preferences
+                        </button>
+                    </div>
+                </form>
+                <div id="settings-status" class="form-status"></div>
             </div>
         </div>
     </main>

@@ -17,6 +17,12 @@ export default function App() {
   const [projects, setProjects] = useState(null);
   const [services, setServices] = useState([]);
   const [philosophy, setPhilosophy] = useState([]);
+  const [settings, setSettings] = useState({
+    smoothScrollAbout: true,
+    smoothScrollProjects: true,
+    smoothScrollServices: false,
+    smoothScrollSkills: false
+  });
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('zizo_theme') || 'dark';
   });
@@ -37,6 +43,35 @@ export default function App() {
   };
 
   useEffect(() => {
+    // 1. Visitor Analytics Tracking
+    try {
+      const referrer = document.referrer || 'Direct';
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('q') || urlParams.get('search') || urlParams.get('utm_source') || '';
+
+      fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          path: window.location.pathname,
+          referrer,
+          searchQuery,
+          screenResolution: `${window.screen.width}x${window.screen.height}`,
+          language: navigator.language || navigator.userLanguage || ''
+        })
+      }).catch(() => {});
+    } catch (e) {}
+
+    // 2. Fetch Animation & Smooth Scroll Settings
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data === 'object') {
+          setSettings((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch((err) => console.error('Error fetching settings:', err));
+
     // Fetch profile
     fetch('/api/profile')
       .then((res) => res.json())
@@ -87,8 +122,8 @@ export default function App() {
       <div className="fixed inset-0 bg-grid-pattern pointer-events-none opacity-40 z-0" />
 
       {/* Ambient Radial Lights */}
-      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
-      <div className="fixed bottom-1/4 right-10 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="fixed top-0 left-1/4 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="fixed bottom-1/4 right-0 sm:right-10 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
 
       {/* Main Content Container */}
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -101,17 +136,17 @@ export default function App() {
           {/* Programming Languages & Technologies Marquee Banner (Image 1) */}
           <TechMarquee />
 
-          {/* About Me Section */}
-          <About profile={profile} />
+          {/* About Me Section (respects smoothScrollAbout setting) */}
+          <About profile={profile} smoothScroll={settings.smoothScrollAbout} />
 
-          {/* Services Section */}
-          <Services services={services} philosophy={philosophy} />
+          {/* Services Section (respects smoothScrollServices setting) */}
+          <Services services={services} philosophy={philosophy} smoothScroll={settings.smoothScrollServices} />
 
-          {/* Skills Section */}
-          <Skills skills={skills} />
+          {/* Skills Section (respects smoothScrollSkills setting) */}
+          <Skills skills={skills} smoothScroll={settings.smoothScrollSkills} />
 
-          {/* Selected Portfolio / Project-by-Project Scroll Showcase (Image 2) */}
-          <ProjectsSection projects={projects} />
+          {/* Selected Portfolio / Project-by-Project Scroll Showcase (respects smoothScrollProjects setting) */}
+          <ProjectsSection projects={projects} smoothScroll={settings.smoothScrollProjects} />
 
           {/* Contact Section */}
           <Contact profile={profile} />

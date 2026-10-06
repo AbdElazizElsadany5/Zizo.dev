@@ -15,10 +15,24 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
   const [activeSection, setActiveSection] = useState('home');
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hideNav, setHideNav] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
+
+      // Hide Navbar smoothly when reaching or inside Projects section
+      const projectsEl = document.getElementById('projects');
+      if (projectsEl) {
+        const rect = projectsEl.getBoundingClientRect();
+        const inProjects = rect.top <= 80 && rect.bottom >= 120;
+        setHideNav(inProjects);
+        if (inProjects) {
+          setMobileOpen(false);
+        }
+      } else {
+        setHideNav(false);
+      }
 
       const sections = ['home', 'about', 'services', 'skills', 'projects', 'contact'];
       for (const sectionId of sections) {
@@ -33,7 +47,8 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -41,7 +56,19 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
     setMobileOpen(false);
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      if (id === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      // Sticky sections (about, projects) align at 0 to pin immediately at start
+      // Non-sticky sections (services, skills, contact) offset for navbar pill
+      const navOffset = (id === 'about' || id === 'projects') ? 0 : 75;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -50,12 +77,16 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
   const logoSub = profile?.logoSubtitle || 'PORTFOLIO';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4 pointer-events-none transition-all duration-500">
+    <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 sm:pt-5 px-2.5 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out max-w-[100vw] ${
+      hideNav
+        ? '-translate-y-36 opacity-0 pointer-events-none'
+        : 'translate-y-0 opacity-100'
+    }`}>
       <nav
         className={`pointer-events-auto w-full transition-all duration-500 flex items-center justify-between ${
           scrolled
-            ? 'max-w-[1050px] bg-[#0a0f1d]/90 backdrop-blur-2xl border border-cyan-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_25px_rgba(6,182,212,0.12)] rounded-full px-6 py-2.5'
-            : 'max-w-6xl bg-transparent px-4 py-2'
+            ? 'max-w-[1050px] bg-[#0a0f1d]/90 backdrop-blur-2xl border border-cyan-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_25px_rgba(6,182,212,0.12)] rounded-full px-3.5 sm:px-6 py-2 sm:py-2.5'
+            : 'max-w-6xl bg-transparent px-2 sm:px-4 py-2'
         }`}
       >
         {/* Brand Logo - Electric Cyan & Sky Blue */}
@@ -65,9 +96,9 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
             e.preventDefault();
             scrollTo('home');
           }}
-          className="flex flex-col group pl-2"
+          className="flex flex-col group pl-1 sm:pl-2"
         >
-          <div className="flex items-center gap-1.5 font-bold text-xl sm:text-2xl tracking-tight leading-none font-['Outfit']">
+          <div className="flex items-center gap-1 sm:gap-1.5 font-bold text-lg sm:text-2xl tracking-tight leading-none font-['Outfit']">
             <span className="text-white group-hover:text-cyan-200 transition-colors">
               {logoFirst}
             </span>

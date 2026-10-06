@@ -215,6 +215,30 @@ const PhilosophySchema = new mongoose.Schema({
 }, { strict: false });
 const Philosophy = mongoose.model('Philosophy', PhilosophySchema);
 
+const VisitSchema = new mongoose.Schema({
+    ip: String,
+    userAgent: String,
+    referrer: String,
+    searchQuery: String,
+    path: String,
+    device: String,
+    browser: String,
+    os: String,
+    screenResolution: String,
+    language: String,
+    createdAt: { type: Date, default: Date.now }
+});
+const Visit = mongoose.model('Visit', VisitSchema);
+
+const SettingSchema = new mongoose.Schema({
+    smoothScrollAbout: { type: Boolean, default: true },
+    smoothScrollProjects: { type: Boolean, default: true },
+    smoothScrollServices: { type: Boolean, default: false },
+    smoothScrollSkills: { type: Boolean, default: false },
+    updatedAt: { type: Date, default: Date.now }
+});
+const Setting = mongoose.model('Setting', SettingSchema);
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -262,6 +286,22 @@ const SKILLS_FILE = path.join(DATA_DIR, 'skills.json');
 const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const SERVICES_FILE = path.join(DATA_DIR, 'services.json');
 const PHILOSOPHY_FILE = path.join(DATA_DIR, 'philosophy.json');
+const VISITS_FILE = path.join(DATA_DIR, 'visits.json');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+
+const initialSettings = {
+    smoothScrollAbout: true,
+    smoothScrollProjects: true,
+    smoothScrollServices: false,
+    smoothScrollSkills: false
+};
+
+if (!fs.existsSync(SETTINGS_FILE)) {
+    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(initialSettings, null, 2));
+}
+if (!fs.existsSync(VISITS_FILE)) {
+    fs.writeFileSync(VISITS_FILE, JSON.stringify([], null, 2));
+}
 
 // --- SEED SECTIONS ---
 const initialProjects = [
@@ -1113,6 +1153,242 @@ app.delete('/api/messages/:id', async (req, res) => {
             res.json({ success: true, message: "Message deleted successfully." });
         } else {
             res.status(500).json({ success: false, message: "Failed to delete message." });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- ANALYTICS & VISITOR TRACKING HELPERS & ENDPOINTS ---
+function parseUserAgent(ua = '') {
+    let browser = 'Chrome';
+    let os = 'Windows';
+    let device = 'Desktop';
+
+    if (/mobile|android.*mobile|iphone|ipod/i.test(ua)) device = 'Mobile';
+    else if (/tablet|ipad/i.test(ua)) device = 'Tablet';
+
+    if (/windows/i.test(ua)) os = 'Windows';
+    else if (/macintosh|mac os x/i.test(ua)) os = 'macOS';
+    else if (/android/i.test(ua)) os = 'Android';
+    else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+    else if (/linux/i.test(ua)) os = 'Linux';
+
+    if (/edg/i.test(ua)) browser = 'Edge';
+    else if (/chrome|crios/i.test(ua) && !/opr|opera/i.test(ua)) browser = 'Chrome';
+    else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+    else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+    else if (/opr|opera/i.test(ua)) browser = 'Opera';
+
+    return { browser, os, device };
+}
+
+function extractSearchInfo(searchQuery, referrer = '') {
+    if (searchQuery && typeof searchQuery === 'string' && searchQuery.trim()) {
+        return searchQuery.trim();
+    }
+    try {
+        if (referrer && referrer.includes('?')) {
+            const parsedUrl = new URL(referrer);
+            const q = parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('query') || parsedUrl.searchParams.get('search');
+            if (q) return q.trim();
+        }
+    } catch (e) {}
+    return '';
+}
+
+// 1. Visitor Tracking (Public)
+app.post('/api/analytics/track', async (req, res) => {
+    try {
+        const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+        const ip = typeof rawIp === 'string' ? rawIp.split(',')[0].trim() : '127.0.0.1';
+        const userAgent = req.headers['user-agent'] || '';
+        const { browser, os, device } = parseUserAgent(userAgent);
+        
+        const referrer = req.body.referrer || req.headers['referer'] || 'Direct';
+        const searchQuery = extractSearchInfo(req.body.searchQuery, referrer);
+        const path = req.body.path || '/';
+        const screenResolution = req.body.screenResolution || '';
+        const language = req.body.language || req.headers['accept-language']?.split(',')[0] || '';
+
+        const visitData = {
+            ip,
+            userAgent,
+            referrer,
+            searchQuery,
+            path,
+            device,
+            browser,
+            os,
+            screenResolution,
+            language,
+            createdAt: new Date()
+        };
+
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            const visit = new Visit(visitData);
+            await visit.save();
+        } else {
+            let visits = fs.existsSync(VISITS_FILE) ? readJSON(VISITS_FILE) : [];
+            visits.unshift({ id: Date.now().toString(), ...visitData });
+            if (visits.length > 1000) visits = visits.slice(0, 1000);
+            writeJSON(VISITS_FILE, visits);
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error("Analytics track error:", err.message);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 2. Visitor Analytics Stats (Admin Protected)
+app.get('/api/analytics/stats', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    try {
+        let visits = [];
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            visits = await Visit.find().sort({ createdAt: -1 }).limit(500).lean();
+        } else {
+            visits = fs.existsSync(VISITS_FILE) ? readJSON(VISITS_FILE) : [];
+        }
+
+        const totalVisits = visits.length;
+        const uniqueIps = new Set(visits.map(v => v.ip).filter(Boolean));
+        const uniqueVisitors = uniqueIps.size;
+
+        const searchCounts = {};
+        const referrerCounts = {};
+        const deviceCounts = { Desktop: 0, Mobile: 0, Tablet: 0 };
+        const browserCounts = {};
+
+        visits.forEach(v => {
+            if (v.searchQuery) {
+                searchCounts[v.searchQuery] = (searchCounts[v.searchQuery] || 0) + 1;
+            }
+            if (v.referrer && v.referrer !== 'Direct') {
+                referrerCounts[v.referrer] = (referrerCounts[v.referrer] || 0) + 1;
+            }
+            if (v.device) {
+                deviceCounts[v.device] = (deviceCounts[v.device] || 0) + 1;
+            }
+            if (v.browser) {
+                browserCounts[v.browser] = (browserCounts[v.browser] || 0) + 1;
+            }
+        });
+
+        const topSearches = Object.entries(searchCounts)
+            .map(([query, count]) => ({ query, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 15);
+
+        const topReferrers = Object.entries(referrerCounts)
+            .map(([referrer, count]) => ({ referrer, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        res.json({
+            success: true,
+            totalVisits,
+            uniqueVisitors,
+            totalSearches: Object.keys(searchCounts).length,
+            topSearches,
+            topReferrers,
+            deviceCounts,
+            browserCounts,
+            recentVisits: visits.slice(0, 80)
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 3. Clear Analytics Logs (Admin Protected)
+app.delete('/api/analytics/clear', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            await Visit.deleteMany({});
+        } else {
+            writeJSON(VISITS_FILE, []);
+        }
+        res.json({ success: true, message: "Analytics logs cleared successfully." });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- SETTINGS (SMOOTH SCROLL & ANIMATIONS) ENDPOINTS ---
+// 1. Get Settings (Public)
+app.get('/api/settings', async (req, res) => {
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            let settings = await Setting.findOne();
+            if (!settings) {
+                settings = new Setting(initialSettings);
+                await settings.save();
+            }
+            return res.json(settings);
+        }
+
+        const settings = fs.existsSync(SETTINGS_FILE) ? readJSON(SETTINGS_FILE) : initialSettings;
+        res.json(settings);
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// 2. Update Settings (Admin Protected)
+app.put('/api/settings', async (req, res) => {
+    const token = req.headers.authorization;
+    if (token !== "zizo_secret_session_token_12345") {
+        return res.status(403).json({ success: false, message: "Unauthorized." });
+    }
+
+    const {
+        smoothScrollAbout,
+        smoothScrollProjects,
+        smoothScrollServices,
+        smoothScrollSkills
+    } = req.body;
+
+    const newSettings = {
+        smoothScrollAbout: typeof smoothScrollAbout === 'boolean' ? smoothScrollAbout : true,
+        smoothScrollProjects: typeof smoothScrollProjects === 'boolean' ? smoothScrollProjects : true,
+        smoothScrollServices: typeof smoothScrollServices === 'boolean' ? smoothScrollServices : false,
+        smoothScrollSkills: typeof smoothScrollSkills === 'boolean' ? smoothScrollSkills : false,
+        updatedAt: new Date()
+    };
+
+    try {
+        if (process.env.MONGODB_URI) {
+            await connectDB();
+            let settings = await Setting.findOne();
+            if (!settings) {
+                settings = new Setting(newSettings);
+            } else {
+                Object.assign(settings, newSettings);
+            }
+            await settings.save();
+            return res.json({ success: true, settings });
+        }
+
+        if (writeJSON(SETTINGS_FILE, newSettings)) {
+            res.json({ success: true, settings: newSettings });
+        } else {
+            res.status(500).json({ success: false, message: "Failed to save settings." });
         }
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

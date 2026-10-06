@@ -14,14 +14,14 @@ export default function Preloader({ onComplete }) {
             setIsDone(true);
             setTimeout(() => {
               if (onComplete) onComplete();
-            }, 600);
-          }, 300);
+            }, 500);
+          }, 250);
           return 100;
         }
         const diff = Math.floor(Math.random() * 15) + 5;
         return Math.min(prev + diff, 100);
       });
-    }, 90);
+    }, 85);
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -31,38 +31,38 @@ export default function Preloader({ onComplete }) {
       {!isDone && (
         <motion.div
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#080b11] overflow-hidden"
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#080b11] overflow-hidden px-4 select-none touch-none w-screen h-screen"
         >
-          {/* Ambient Background Glows */}
-          <div className="absolute w-[450px] h-[450px] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none" />
-          <div className="absolute w-[350px] h-[350px] rounded-full bg-violet-600/10 blur-[100px] pointer-events-none" />
+          {/* Ambient Background Glows (Properly scaled for mobile) */}
+          <div className="absolute w-[280px] sm:w-[450px] h-[280px] sm:h-[450px] rounded-full bg-cyan-500/15 sm:bg-cyan-500/10 blur-[80px] sm:blur-[120px] pointer-events-none -z-10" />
+          <div className="absolute w-[220px] sm:w-[350px] h-[220px] sm:h-[350px] rounded-full bg-violet-600/15 sm:bg-violet-600/10 blur-[70px] sm:blur-[100px] pointer-events-none -z-10" />
 
           {/* Center Monogram Container */}
-          <div className="relative flex flex-col items-center">
-            {/* Rotating Ambient Ring */}
+          <div className="relative flex flex-col items-center max-w-full">
+            {/* Rotating Ambient Rings */}
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
-              className="absolute -inset-8 rounded-full border border-dashed border-cyan-500/20"
+              className="absolute -inset-5 sm:-inset-8 rounded-full border border-dashed border-cyan-500/25 pointer-events-none"
             />
             <motion.div
               animate={{ rotate: -360 }}
               transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-              className="absolute -inset-14 rounded-full border border-cyan-500/10"
+              className="absolute -inset-10 sm:-inset-14 rounded-full border border-cyan-500/15 pointer-events-none"
             />
 
             {/* Glowing Hexagon Badge with Stylized "Z" Logo */}
-            <div className="relative w-28 h-28 flex items-center justify-center rounded-3xl bg-slate-900/80 border border-cyan-500/30 shadow-[0_0_50px_rgba(6,182,212,0.25)] backdrop-blur-xl">
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center rounded-2xl sm:rounded-3xl bg-slate-900/90 border border-cyan-500/35 shadow-[0_0_40px_rgba(6,182,212,0.3)] backdrop-blur-xl">
               {/* Neon SVG Path Drawing for Z */}
               <svg
-                width="64"
-                height="64"
+                width="54"
+                height="54"
                 viewBox="0 0 100 100"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="overflow-visible"
+                className="overflow-visible w-14 h-14 sm:w-16 sm:h-16"
               >
                 <defs>
                   <linearGradient id="zGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -107,23 +107,23 @@ export default function Preloader({ onComplete }) {
             </div>
 
             {/* Typography */}
-            <div className="mt-8 flex flex-col items-center">
+            <div className="mt-6 sm:mt-8 flex flex-col items-center text-center px-2">
               <motion.span
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="font-mono text-xs tracking-[0.3em] uppercase text-cyan-400 font-semibold mb-2"
+                transition={{ delay: 0.25 }}
+                className="font-mono text-[10px] sm:text-xs tracking-[0.22em] sm:tracking-[0.3em] uppercase text-cyan-400 font-semibold mb-1.5 sm:mb-2"
               >
                 ZIZO • PORTFOLIO
               </motion.span>
-              <h2 className="text-xl font-bold tracking-wider text-slate-100 font-['Outfit']">
+              <h2 className="text-lg sm:text-xl font-bold tracking-normal sm:tracking-wider text-slate-100 font-['Outfit']">
                 AbdElaziz Elsadany
               </h2>
             </div>
 
             {/* Progress Bar & Counter */}
-            <div className="w-56 mt-6 flex flex-col items-center gap-2">
-              <div className="w-full h-1.5 bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/40 p-[1px]">
+            <div className="w-48 sm:w-60 max-w-[80vw] mt-5 sm:mt-6 flex flex-col items-center gap-2">
+              <div className="w-full h-1.5 sm:h-2 bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/40 p-[1px]">
                 <motion.div
                   className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 rounded-full shadow-[0_0_12px_rgba(6,182,212,0.8)]"
                   style={{ width: `${progress}%` }}
@@ -131,7 +131,7 @@ export default function Preloader({ onComplete }) {
                 />
               </div>
 
-              <div className="w-full flex justify-between items-center text-xs font-mono text-slate-400">
+              <div className="w-full flex justify-between items-center text-[11px] sm:text-xs font-mono text-slate-400">
                 <span className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
                   LOADING

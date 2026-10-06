@@ -65,7 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             
             tabPanels.forEach(p => p.classList.remove('active'));
-            document.getElementById(targetTab).classList.add('active');
+            const panel = document.getElementById(targetTab);
+            if (panel) panel.classList.add('active');
+
+            if (targetTab === 'analytics-tab') {
+                loadAdminAnalytics();
+            } else if (targetTab === 'settings-tab') {
+                loadAdminSettings();
+            }
         });
     });
 
@@ -80,6 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadAdminServices();
             loadAdminSkills();
             loadAdminMessages();
+            loadAdminAnalytics();
+            loadAdminSettings();
         } else {
             loginOverlay.style.display = 'flex';
             adminDashboard.style.display = 'none';
@@ -1070,6 +1079,253 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 philosophyStatus.className = 'form-status error';
                 philosophyStatus.textContent = 'Server response error.';
+            }
+        });
+    }
+
+    // --- 5. VISITOR ANALYTICS & SEARCHES LOGIC ---
+    const statTotalVisits = document.getElementById('stat-total-visits');
+    const statUniqueVisitors = document.getElementById('stat-unique-visitors');
+    const statSearchCount = document.getElementById('stat-search-count');
+    const statDeviceRatio = document.getElementById('stat-device-ratio');
+    const analyticsSearchesList = document.getElementById('analytics-searches-list');
+    const analyticsReferrersList = document.getElementById('analytics-referrers-list');
+    const analyticsVisitsTbody = document.getElementById('analytics-visits-tbody');
+    const refreshAnalyticsBtn = document.getElementById('refresh-analytics-btn');
+    const clearAnalyticsBtn = document.getElementById('clear-analytics-btn');
+
+    async function loadAdminAnalytics() {
+        const token = localStorage.getItem('zizo_admin_token');
+        if (!token) return;
+
+        try {
+            const res = await fetch('/api/analytics/stats', {
+                headers: { 'Authorization': token }
+            });
+            if (!res.ok) {
+                console.warn("Analytics API returned HTTP status:", res.status);
+                return;
+            }
+            const contentType = res.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                console.warn("Analytics API returned non-JSON content type:", contentType);
+                return;
+            }
+            const data = await res.json();
+
+            if (!data || !data.success) {
+                console.warn("Analytics data not successful:", data);
+                return;
+            }
+
+            // 1. Update Metrics Cards
+            if (statTotalVisits) statTotalVisits.textContent = (data.totalVisits || 0).toLocaleString();
+            if (statUniqueVisitors) statUniqueVisitors.textContent = (data.uniqueVisitors || 0).toLocaleString();
+            if (statSearchCount) statSearchCount.textContent = (data.totalSearches || 0).toLocaleString();
+            if (statDeviceRatio) {
+                const desktop = data.deviceCounts?.Desktop || 0;
+                const mobile = (data.deviceCounts?.Mobile || 0) + (data.deviceCounts?.Tablet || 0);
+                statDeviceRatio.textContent = `${desktop} 💻 / ${mobile} 📱`;
+            }
+
+            // 2. Render Search Queries
+            if (analyticsSearchesList) {
+                if (!data.topSearches || data.topSearches.length === 0) {
+                    analyticsSearchesList.innerHTML = `
+                        <div style="padding: 16px; text-align: center; color: #64748b; font-size: 0.88rem;">
+                            No visitor search keywords recorded yet.
+                        </div>
+                    `;
+                } else {
+                    analyticsSearchesList.innerHTML = data.topSearches.map(item => `
+                        <div class="analytics-chip-item">
+                            <span style="font-weight: 600; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="search" style="width: 14px; height: 14px; color: #38bdf8;"></i>
+                                "${item.query}"
+                            </span>
+                            <span class="badge" style="background: rgba(6,182,212,0.15); color: #38bdf8; font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px;">
+                                ${item.count} ${item.count === 1 ? 'visit' : 'visits'}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 3. Render Referrers
+            if (analyticsReferrersList) {
+                if (!data.topReferrers || data.topReferrers.length === 0) {
+                    analyticsReferrersList.innerHTML = `
+                        <div style="padding: 16px; text-align: center; color: #64748b; font-size: 0.88rem;">
+                            Direct traffic or no referrers recorded yet.
+                        </div>
+                    `;
+                } else {
+                    analyticsReferrersList.innerHTML = data.topReferrers.map(item => `
+                        <div class="analytics-chip-item">
+                            <span style="color: #cbd5e1; word-break: break-all; font-size: 0.82rem; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="external-link" style="width: 13px; height: 13px; color: #94a3b8; flex-shrink: 0;"></i>
+                                ${item.referrer}
+                            </span>
+                            <span class="badge" style="background: rgba(56,189,248,0.12); color: #7dd3fc; font-size: 0.75rem; padding: 2px 8px; border-radius: 9999px; flex-shrink: 0;">
+                                ${item.count}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 4. Render Table
+            if (analyticsVisitsTbody) {
+                if (!data.recentVisits || data.recentVisits.length === 0) {
+                    analyticsVisitsTbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="padding: 28px; text-align: center; color: #94a3b8;">
+                                No visitor records in database yet. New visits will appear here automatically.
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    analyticsVisitsTbody.innerHTML = data.recentVisits.map(v => {
+                        const dateObj = new Date(v.createdAt || v.timestamp);
+                        const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleString('en-GB', {
+                            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                        }) : 'Recent';
+
+                        const deviceIcon = v.device === 'Mobile' ? '📱' : (v.device === 'Tablet' ? '📟' : '💻');
+                        const searchHighlight = v.searchQuery 
+                            ? `<div style="color: #c084fc; font-weight: 600; font-size: 0.8rem; margin-top: 2px;">🔍 "${v.searchQuery}"</div>`
+                            : '';
+                        const referrerClean = (v.referrer && v.referrer !== 'Direct')
+                            ? (v.referrer.length > 35 ? v.referrer.substring(0, 32) + '...' : v.referrer)
+                            : '<span style="color: #64748b;">Direct</span>';
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                <td style="padding: 12px 14px; color: #cbd5e1; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">${formattedDate}</td>
+                                <td style="padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #38bdf8;">${v.ip || 'Unknown'}</td>
+                                <td style="padding: 12px 14px; color: #f1f5f9;">${deviceIcon} ${v.os || 'OS'}</td>
+                                <td style="padding: 12px 14px; color: #94a3b8;">${v.browser || 'Browser'}</td>
+                                <td style="padding: 12px 14px;">
+                                    <div>${referrerClean}</div>
+                                    ${searchHighlight}
+                                </td>
+                                <td style="padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #94a3b8;">${v.path || '/'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (err) {
+            console.error("Error loading analytics:", err);
+        }
+    }
+
+    if (refreshAnalyticsBtn) {
+        refreshAnalyticsBtn.addEventListener('click', () => {
+            loadAdminAnalytics();
+        });
+    }
+
+    if (clearAnalyticsBtn) {
+        clearAnalyticsBtn.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to clear all visitor and search history logs?')) return;
+            const token = localStorage.getItem('zizo_admin_token');
+            try {
+                const res = await fetch('/api/analytics/clear', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': token }
+                });
+                if (!res.ok) {
+                    alert('Failed to clear logs.');
+                    return;
+                }
+                const data = await res.json();
+                if (data.success) {
+                    loadAdminAnalytics();
+                } else {
+                    alert('Failed to clear logs.');
+                }
+            } catch (e) {
+                alert('Server response error.');
+            }
+        });
+    }
+
+    // --- 6. SMOOTH SCROLL & ANIMATION SETTINGS LOGIC ---
+    const settingsForm = document.getElementById('settings-form');
+    const settingAboutSmooth = document.getElementById('setting-about-smooth');
+    const settingProjectsSmooth = document.getElementById('setting-projects-smooth');
+    const settingServicesSmooth = document.getElementById('setting-services-smooth');
+    const settingSkillsSmooth = document.getElementById('setting-skills-smooth');
+    const settingsStatus = document.getElementById('settings-status');
+
+    async function loadAdminSettings() {
+        try {
+            const res = await fetch('/api/settings');
+            if (!res.ok) {
+                console.warn("Settings API returned HTTP status:", res.status);
+                return;
+            }
+            const contentType = res.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                console.warn("Settings API returned non-JSON content type:", contentType);
+                return;
+            }
+            const data = await res.json();
+            if (!data) return;
+
+            if (settingAboutSmooth) settingAboutSmooth.checked = data.smoothScrollAbout !== false;
+            if (settingProjectsSmooth) settingProjectsSmooth.checked = data.smoothScrollProjects !== false;
+            if (settingServicesSmooth) settingServicesSmooth.checked = data.smoothScrollServices === true;
+            if (settingSkillsSmooth) settingSkillsSmooth.checked = data.smoothScrollSkills === true;
+        } catch (err) {
+            console.error("Error loading settings:", err);
+        }
+    }
+
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('zizo_admin_token');
+            if (!token) return;
+
+            settingsStatus.className = 'form-status';
+            settingsStatus.textContent = 'Saving animation preferences to database...';
+
+            const payload = {
+                smoothScrollAbout: settingAboutSmooth ? settingAboutSmooth.checked : true,
+                smoothScrollProjects: settingProjectsSmooth ? settingProjectsSmooth.checked : true,
+                smoothScrollServices: settingServicesSmooth ? settingServicesSmooth.checked : false,
+                smoothScrollSkills: settingSkillsSmooth ? settingSkillsSmooth.checked : false
+            };
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    settingsStatus.className = 'form-status success';
+                    settingsStatus.textContent = 'Animation & smooth scroll preferences saved and active immediately!';
+                    setTimeout(() => {
+                        settingsStatus.className = 'form-status';
+                        settingsStatus.textContent = '';
+                    }, 4000);
+                } else {
+                    settingsStatus.className = 'form-status error';
+                    settingsStatus.textContent = data.message || 'Failed to save settings.';
+                }
+            } catch (err) {
+                settingsStatus.className = 'form-status error';
+                settingsStatus.textContent = 'Server response error.';
             }
         });
     }
