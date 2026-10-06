@@ -7,6 +7,12 @@ import ProjectPreviewModal from './ProjectPreviewModal';
 export default function ProjectsSection({ projects, smoothScroll = true }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedPreview, setSelectedPreview] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024;
+    }
+    return true;
+  });
   const containerRef = useRef(null);
   const isClicking = useRef(false);
   const touchStartX = useRef(null);
@@ -14,9 +20,21 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
   const displayProjects = projects || [];
   const total = displayProjects.length;
 
-  // Track natural scroll progress through tall container only when smoothScroll is enabled
+  // Track window resize to ensure smooth scroll is strictly active ONLY on laptops and desktops (>= 1024px)
   useEffect(() => {
-    if (!smoothScroll || !projects || total === 0) return;
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Smooth scroll is strictly enabled ONLY if smoothScroll setting is true AND device is a desktop/laptop (>= 1024px)
+  const effectiveSmooth = Boolean(smoothScroll && isDesktop);
+
+  // Track natural scroll progress through tall container only when smoothScroll is enabled on desktop/laptops
+  useEffect(() => {
+    if (!effectiveSmooth || !projects || total === 0) return;
     const onScroll = () => {
       if (isClicking.current || !containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
@@ -35,14 +53,14 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [smoothScroll, currentIndex, total, projects]);
+  }, [effectiveSmooth, currentIndex, total, projects]);
 
   // Jump to specific project on dot/arrow click
   const goToProject = (idx) => {
     if (total === 0) return;
     setCurrentIndex(idx);
 
-    if (smoothScroll && containerRef.current) {
+    if (effectiveSmooth && containerRef.current) {
       isClicking.current = true;
       const rect = containerRef.current.getBoundingClientRect();
       const scrollTop = window.scrollY + rect.top;
@@ -123,12 +141,12 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
     <section
       id="projects"
       ref={containerRef}
-      style={{ height: smoothScroll ? `${Math.max(2, total) * 75}vh` : 'auto' }}
-      className={`relative bg-[#080b11] border-b border-white/[0.06] ${smoothScroll ? '' : 'py-20 sm:py-28'}`}
+      style={{ height: effectiveSmooth ? `${Math.max(2, total) * 75}vh` : 'auto' }}
+      className={`relative bg-[#080b11] border-b border-white/[0.06] ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
     >
-      {/* Pinned Sticky Viewport if smoothScroll, or clean centered showcase if static */}
+      {/* Pinned Sticky Viewport if smoothScroll on desktop, or clean static showcase on mobile & when disabled */}
       <div 
-        className={smoothScroll ? "sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-4 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
+        className={effectiveSmooth ? "sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-4 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -163,7 +181,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
               <div className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.9)] animate-pulse" />
                 <span>
-                  {smoothScroll
+                  {effectiveSmooth
                     ? "Scroll down to navigate projects automatically"
                     : "Use arrows or swipe to navigate projects"}
                 </span>
