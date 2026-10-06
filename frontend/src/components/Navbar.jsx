@@ -60,9 +60,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      // Sticky sections (about, projects) align at 0 to pin immediately at start
-      // Non-sticky sections (services, skills, contact) offset for navbar pill
-      const navOffset = (id === 'about' || id === 'projects') ? 0 : 75;
+      // Sticky sections on desktop (about, projects) align at 0 to pin immediately at start
+      // Non-sticky sections and all sections on mobile (< 1024px) offset for navbar
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+      const navOffset = (!isMobile && (id === 'about' || id === 'projects')) ? 0 : 75;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - navOffset;
       window.scrollTo({

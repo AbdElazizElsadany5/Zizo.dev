@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Download } from 'lucide-react';
 
@@ -43,6 +43,20 @@ function ScrollParagraphReveal({ text, progress, startProgress, endProgress, cla
 export default function About({ profile, smoothScroll = true }) {
   const containerRef = useRef(null);
 
+  // Track window resize to ensure smooth scroll is strictly active ONLY on laptops and desktops (>= 1024px)
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Smooth scroll is strictly enabled ONLY if smoothScroll setting is true AND device is a desktop/laptop (>= 1024px)
+  const effectiveSmooth = Boolean(smoothScroll && isDesktop);
+
   // Track scroll progress through container to reveal words as user scrolls
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -54,8 +68,8 @@ export default function About({ profile, smoothScroll = true }) {
   const location = profile?.location || 'Cairo, Egypt';
   const email = profile?.email || 'zizoelsadany5@gmail.com';
 
-  // If Smooth Scroll is disabled in Admin, render clean static layout without scroll locks or voids
-  if (smoothScroll === false) {
+  // If Smooth Scroll is disabled or on mobile/phone (< 1024px), render clean static layout without scroll locks or voids
+  if (!effectiveSmooth) {
     return (
       <section
         id="about"
