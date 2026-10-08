@@ -23,4 +23,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /api/
 
-Sitemap: https://zizo.dev/sitemap.xml
+Sitemap: https://abdelazizelsadany.dev/sitemap.xml

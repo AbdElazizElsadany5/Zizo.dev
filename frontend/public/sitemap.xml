@@ -4,50 +4,50 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
-    <loc>https://zizo.dev/</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/#about</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/#about</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/#projects</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/#projects</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/#skills</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/#skills</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/#services</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/#services</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/#contact</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/#contact</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/llms.txt</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/llms.txt</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://zizo.dev/profile-seo.json</loc>
-    <lastmod>2026-10-06</lastmod>
+    <loc>https://abdelazizelsadany.dev/profile-seo.json</loc>
+    <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
