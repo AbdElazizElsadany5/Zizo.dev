@@ -78,7 +78,7 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
   const logoSub = profile?.logoSubtitle || 'PORTFOLIO';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 sm:pt-5 px-2.5 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out max-w-[100vw] ${
+    <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 sm:pt-5 px-2.5 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out w-full max-w-full overflow-x-hidden ${
       hideNav
         ? '-translate-y-36 opacity-0 pointer-events-none'
         : 'translate-y-0 opacity-100'

@@ -25,7 +25,7 @@ const TECH_ITEMS = [
 
 export default function TechMarquee() {
   return (
-    <section className="relative w-full py-8 overflow-hidden bg-[#080b11] border-y border-white/[0.06]">
+    <section dir="ltr" className="relative w-full max-w-full py-8 overflow-hidden bg-[#080b11] border-y border-white/[0.06] select-none">
       {/* Edge Blur / Gradients for seamless infinite fade */}
       <div className="marquee-fade-left absolute top-0 bottom-0 left-0 w-24 sm:w-44 bg-gradient-to-r from-[#080b11] via-[#080b11]/80 to-transparent z-10 pointer-events-none" />
       <div className="marquee-fade-right absolute top-0 bottom-0 right-0 w-24 sm:w-44 bg-gradient-to-l from-[#080b11] via-[#080b11]/80 to-transparent z-10 pointer-events-none" />

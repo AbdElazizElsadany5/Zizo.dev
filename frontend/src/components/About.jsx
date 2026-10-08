@@ -73,7 +73,7 @@ export default function About({ profile, smoothScroll = true }) {
     return (
       <section
         id="about"
-        className="relative bg-[#080b11] border-b border-white/[0.06] py-20 sm:py-28 px-4 sm:px-6 lg:px-8"
+        className="relative bg-[#080b11] border-b border-white/[0.06] py-20 sm:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden w-full max-w-full"
       >
         <div className="absolute top-1/4 left-10 w-80 sm:w-96 h-80 sm:h-96 bg-cyan-500/10 rounded-full blur-[160px] pointer-events-none -z-10" />
         <div className="absolute bottom-1/4 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-blue-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
@@ -123,7 +123,7 @@ export default function About({ profile, smoothScroll = true }) {
       id="about"
       ref={containerRef}
       style={{ height: '200vh' }}
-      className="relative bg-[#080b11] border-b border-white/[0.06]"
+      className="relative bg-[#080b11] border-b border-white/[0.06] overflow-hidden w-full max-w-full"
     >
       {/* Pinned Sticky Viewport: Unveils words smoothly without dead space */}
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8">

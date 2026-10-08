@@ -60,7 +60,7 @@ export default function Skills({ skills = [], smoothScroll = false }) {
   return (
     <section
       id="skills"
-      className="relative py-24 sm:py-32 bg-[#080b11] border-b border-white/[0.06] overflow-hidden"
+      className="relative py-24 sm:py-32 bg-[#080b11] border-b border-white/[0.06] overflow-hidden w-full max-w-full"
     >
       {/* Background ambient lighting */}
       <div className="absolute top-1/4 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-[150px] pointer-events-none -z-10" />

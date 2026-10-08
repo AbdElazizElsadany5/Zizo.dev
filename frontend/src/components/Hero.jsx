@@ -109,7 +109,7 @@ export default function Hero({ profile, skills = [], projects = [] }) {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-[14%] sm:top-[16%] left-[2%] sm:left-[6%] font-mono font-black text-4xl sm:text-8xl md:text-[10rem] text-cyan-500/15 sm:text-cyan-500/20 drop-shadow-[0_0_25px_rgba(6,182,212,0.3)] pointer-events-none"
+          className="absolute top-[14%] sm:top-[16%] left-3 sm:left-[6%] font-mono font-black text-3xl sm:text-8xl md:text-[10rem] text-cyan-500/15 sm:text-cyan-500/20 drop-shadow-[0_0_25px_rgba(6,182,212,0.3)] pointer-events-none"
         >
           &lt;/&gt;
         </motion.div>
@@ -126,7 +126,7 @@ export default function Hero({ profile, skills = [], projects = [] }) {
             ease: "easeInOut",
             delay: 1.5,
           }}
-          className="absolute top-[20%] sm:top-[22%] right-[2%] sm:right-[5%] font-mono font-black text-5xl sm:text-8xl md:text-[11rem] text-sky-400/15 sm:text-sky-400/20 drop-shadow-[0_0_30px_rgba(56,189,248,0.3)] pointer-events-none"
+          className="absolute top-[20%] sm:top-[22%] right-3 sm:right-[5%] font-mono font-black text-3xl sm:text-8xl md:text-[11rem] text-sky-400/15 sm:text-sky-400/20 drop-shadow-[0_0_30px_rgba(56,189,248,0.3)] pointer-events-none"
         >
           {'{ }'}
         </motion.div>

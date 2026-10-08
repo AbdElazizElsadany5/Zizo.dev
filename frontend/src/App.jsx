@@ -114,7 +114,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#080b11] text-slate-100 font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden bg-[#080b11] text-slate-100 font-['Plus_Jakarta_Sans',sans-serif] selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* High-end "Z" Logo Loading Screen */}
       {loading && <Preloader onComplete={() => setLoading(false)} />}
 
@@ -122,14 +122,14 @@ export default function App() {
       <div className="fixed inset-0 bg-grid-pattern pointer-events-none opacity-40 z-0" />
 
       {/* Ambient Radial Lights */}
-      <div className="fixed top-0 left-1/4 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
-      <div className="fixed bottom-1/4 right-0 sm:right-10 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="fixed top-0 left-1/4 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] max-w-full bg-cyan-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
+      <div className="fixed bottom-1/4 right-0 sm:right-10 w-[280px] sm:w-[500px] h-[280px] sm:h-[500px] max-w-full bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
 
       {/* Main Content Container */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
         <Navbar profile={profile} theme={theme} onToggleTheme={toggleTheme} />
 
-        <main className="flex-grow">
+        <main className="flex-grow w-full max-w-full min-w-0 overflow-x-hidden">
           {/* Hero Section with Interactive Terminal */}
           <Hero profile={profile} skills={skills} projects={projects} />
 

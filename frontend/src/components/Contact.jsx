@@ -56,7 +56,7 @@ export default function Contact({ profile }) {
   };
 
   return (
-    <section id="contact" className="relative py-28 sm:py-36 bg-[#080b11] overflow-hidden">
+    <section id="contact" className="relative py-28 sm:py-36 bg-[#080b11] overflow-hidden w-full max-w-full">
       {/* Background ambient glow (Blue & Cyan) */}
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[160px] pointer-events-none" />

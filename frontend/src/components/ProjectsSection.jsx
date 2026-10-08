@@ -142,7 +142,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
       id="projects"
       ref={containerRef}
       style={{ height: effectiveSmooth ? `${Math.max(2, total) * 75}vh` : 'auto' }}
-      className={`relative bg-[#080b11] border-b border-white/[0.06] ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
+      className={`relative bg-[#080b11] border-b border-white/[0.06] overflow-hidden w-full max-w-full ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
     >
       {/* Pinned Sticky Viewport if smoothScroll on desktop, or clean static showcase on mobile & when disabled */}
       <div 
