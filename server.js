@@ -37,13 +37,20 @@ try {
 }
 
 const sendContactNotificationEmail = async ({ name, email, message }) => {
-    const emailUser = process.env.EMAIL_USER;
-    const emailPass = process.env.EMAIL_PASS;
-    const emailTo = process.env.EMAIL_TO || emailUser;
+    const emailUser = process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : null;
+    const emailPass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : null;
+    const emailTo = (process.env.EMAIL_TO ? process.env.EMAIL_TO.trim() : null) || emailUser;
 
     if (!nodemailer || !emailUser || !emailPass) {
-        console.log("ℹ️  Email notification skipped: nodemailer or EMAIL_USER/EMAIL_PASS not configured.");
-        return;
+        console.warn("⚠️ [Email Notification Skipped] Missing configuration: " + 
+            (!nodemailer ? "nodemailer not loaded; " : "") + 
+            (!emailUser ? "EMAIL_USER not set; " : "") + 
+            (!emailPass ? "EMAIL_PASS not set; " : "")
+        );
+        return { 
+            success: false, 
+            error: "EMAIL_USER or EMAIL_PASS environment variable is missing." 
+        };
     }
 
     try {
@@ -108,8 +115,10 @@ const sendContactNotificationEmail = async ({ name, email, message }) => {
 
         const info = await transporter.sendMail(mailOptions);
         console.log(`✅ Email notification successfully sent to ${emailTo}! ID: ${info.messageId}`);
+        return { success: true, messageId: info.messageId };
     } catch (err) {
         console.error("❌ Failed to send email notification:", err.message);
+        return { success: false, error: err.message };
     }
 };
 
@@ -1060,6 +1069,8 @@ app.post('/api/messages', async (req, res) => {
     };
 
     try {
+        let emailResult = null;
+
         if (process.env.MONGODB_URI) {
             await connectDB();
             const msg = new Message(newMessageData);
@@ -1067,12 +1078,19 @@ app.post('/api/messages', async (req, res) => {
             const o = msg.toObject();
             o.id = o._id.toString();
 
-            // Send instant email notification to personal inbox
-            sendContactNotificationEmail(newMessageData).catch(err => {
-                console.error("Async email notification error:", err.message);
-            });
+            // Await email notification so serverless functions (e.g. Vercel) do not freeze before sending
+            try {
+                emailResult = await sendContactNotificationEmail(newMessageData);
+            } catch (err) {
+                console.error("Email notification execution error:", err.message);
+                emailResult = { success: false, error: err.message };
+            }
 
-            return res.status(201).json({ success: true, message: o });
+            return res.status(201).json({ 
+                success: true, 
+                message: o, 
+                emailNotification: emailResult 
+            });
         }
 
         // Local fallback
@@ -1083,17 +1101,84 @@ app.post('/api/messages', async (req, res) => {
         };
         messages.push(newMessage);
         if (writeJSON(MESSAGES_FILE, messages)) {
-            // Send instant email notification to personal inbox
-            sendContactNotificationEmail(newMessageData).catch(err => {
-                console.error("Async email notification error:", err.message);
-            });
+            // Await email notification so serverless functions (e.g. Vercel) do not freeze before sending
+            try {
+                emailResult = await sendContactNotificationEmail(newMessageData);
+            } catch (err) {
+                console.error("Email notification execution error:", err.message);
+                emailResult = { success: false, error: err.message };
+            }
 
-            res.status(201).json({ success: true, message: newMessage });
+            res.status(201).json({ 
+                success: true, 
+                message: newMessage, 
+                emailNotification: emailResult 
+            });
         } else {
             res.status(500).json({ success: false, message: "Failed to save message." });
         }
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Diagnostic endpoint to test email configuration & sending
+app.get('/api/test-email', async (req, res) => {
+    const emailUser = process.env.EMAIL_USER ? process.env.EMAIL_USER.trim() : null;
+    const emailPass = process.env.EMAIL_PASS ? process.env.EMAIL_PASS.trim() : null;
+    const emailTo = (process.env.EMAIL_TO ? process.env.EMAIL_TO.trim() : null) || emailUser;
+
+    const diagnostics = {
+        nodemailerInstalled: !!nodemailer,
+        emailUserConfigured: !!emailUser,
+        emailUser: emailUser ? `${emailUser.slice(0, 3)}***@${emailUser.split('@')[1] || ''}` : null,
+        emailPassConfigured: !!emailPass,
+        emailPassLength: emailPass ? emailPass.length : 0,
+        emailTo: emailTo ? `${emailTo.slice(0, 3)}***@${emailTo.split('@')[1] || ''}` : null,
+        environment: process.env.VERCEL ? 'Vercel Serverless' : 'Local / Custom Node'
+    };
+
+    if (!nodemailer || !emailUser || !emailPass) {
+        return res.status(500).json({
+            success: false,
+            message: "Missing email configuration in environment variables.",
+            diagnostics,
+            instructions: "Make sure EMAIL_USER, EMAIL_PASS, and EMAIL_TO are added in your .env file or Vercel Environment Variables dashboard."
+        });
+    }
+
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: emailUser,
+                pass: emailPass
+            }
+        });
+
+        // Test SMTP connection verification
+        await transporter.verify();
+
+        // If send=true or default test run
+        const info = await transporter.sendMail({
+            from: `"Zizo.dev Diagnostic" <${emailUser}>`,
+            to: emailTo,
+            subject: '🧪 اختبار نجاح إعدادات البريد من Zizo.dev',
+            text: `تم فحص إعدادات البريد بنجاح!\nالمرسل: ${emailUser}\nالمستقبل: ${emailTo}\nالوقت: ${new Date().toISOString()}`
+        });
+
+        return res.json({
+            success: true,
+            message: `Email system is 100% working! Test email sent successfully to ${emailTo}.`,
+            messageId: info.messageId,
+            diagnostics
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: `Failed to authenticate or send email: ${err.message}`,
+            diagnostics
+        });
     }
 });
 
