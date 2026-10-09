@@ -43,19 +43,8 @@ function ScrollParagraphReveal({ text, progress, startProgress, endProgress, cla
 export default function About({ profile, smoothScroll = true }) {
   const containerRef = useRef(null);
 
-  // Track window resize to ensure smooth scroll is strictly active ONLY on laptops and desktops (>= 1024px)
-  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Smooth scroll is strictly enabled ONLY if smoothScroll setting is true AND device is a desktop/laptop (>= 1024px)
-  const effectiveSmooth = Boolean(smoothScroll && isDesktop);
+  // Smooth scroll is active whenever smoothScroll setting is enabled
+  const effectiveSmooth = Boolean(smoothScroll);
 
   // Track scroll progress through container to reveal words as user scrolls
   const { scrollYProgress } = useScroll({
@@ -123,7 +112,7 @@ export default function About({ profile, smoothScroll = true }) {
       id="about"
       ref={containerRef}
       style={{ height: '200vh' }}
-      className="relative bg-[#080b11] border-b border-white/[0.06] overflow-hidden w-full max-w-full"
+      className="relative bg-[#080b11] border-b border-white/[0.06] w-full max-w-full"
     >
       {/* Pinned Sticky Viewport: Unveils words smoothly without dead space */}
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8">

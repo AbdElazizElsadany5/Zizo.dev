@@ -7,12 +7,6 @@ import ProjectPreviewModal from './ProjectPreviewModal';
 export default function ProjectsSection({ projects, smoothScroll = true }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedPreview, setSelectedPreview] = useState(null);
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth >= 1024;
-    }
-    return true;
-  });
   const containerRef = useRef(null);
   const isClicking = useRef(false);
   const touchStartX = useRef(null);
@@ -20,19 +14,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
   const displayProjects = projects || [];
   const total = displayProjects.length;
 
-  // Track window resize to ensure smooth scroll is strictly active ONLY on laptops and desktops (>= 1024px)
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Smooth scroll is active whenever smoothScroll setting is enabled
+  const effectiveSmooth = Boolean(smoothScroll);
 
-  // Smooth scroll is strictly enabled ONLY if smoothScroll setting is true AND device is a desktop/laptop (>= 1024px)
-  const effectiveSmooth = Boolean(smoothScroll && isDesktop);
-
-  // Track natural scroll progress through tall container only when smoothScroll is enabled on desktop/laptops
+  // Track natural scroll progress through tall container when smoothScroll is enabled
   useEffect(() => {
     if (!effectiveSmooth || !projects || total === 0) return;
     const onScroll = () => {
@@ -52,6 +37,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, [effectiveSmooth, currentIndex, total, projects]);
 
@@ -141,12 +127,12 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
     <section
       id="projects"
       ref={containerRef}
-      style={{ height: effectiveSmooth ? `${Math.max(2, total) * 75}vh` : 'auto' }}
-      className={`relative bg-[#080b11] border-b border-white/[0.06] overflow-hidden w-full max-w-full ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
+      style={{ height: effectiveSmooth ? `${Math.max(2, total) * 90}vh` : 'auto' }}
+      className={`relative bg-[#080b11] border-b border-white/[0.06] w-full max-w-full ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
     >
-      {/* Pinned Sticky Viewport if smoothScroll on desktop, or clean static showcase on mobile & when disabled */}
+      {/* Pinned Sticky Viewport when smoothScroll is enabled */}
       <div 
-        className={effectiveSmooth ? "sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-4 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
+        className={effectiveSmooth ? "sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-3 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -155,19 +141,19 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
         <div className="absolute bottom-1/4 -right-48 w-80 sm:w-96 h-80 sm:h-96 bg-blue-600/15 rounded-full blur-[140px] pointer-events-none -z-10" />
 
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-14 items-center">
             
             {/* Left Column: Heading, Description & Progress */}
-            <div className="lg:col-span-5 flex flex-col items-start space-y-3 sm:space-y-6">
+            <div className="lg:col-span-5 flex flex-col items-start space-y-2 sm:space-y-6">
               
               {/* Pill Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-xs font-semibold tracking-wider text-cyan-300 uppercase shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-[11px] sm:text-xs font-semibold tracking-wider text-cyan-300 uppercase shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Selected Portfolio</span>
               </div>
 
               {/* Title: My Works */}
-              <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] leading-none">
+              <h2 className="text-2xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] leading-none">
                 My <br className="hidden sm:inline" />
                 <span className="text-white">Works</span>
               </h2>
@@ -178,7 +164,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
               </p>
 
               {/* Navigation indicator */}
-              <div className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 tracking-wide">
+              <div className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-mono text-slate-400 tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.9)] animate-pulse" />
                 <span>
                   {effectiveSmooth
@@ -188,20 +174,20 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
               </div>
 
               {/* Stepper Navigation & Project Counter */}
-              <div className="w-full pt-3 sm:pt-4 flex items-center justify-between border-t border-white/[0.08]">
+              <div className="w-full pt-2 sm:pt-4 flex items-center justify-between border-t border-white/[0.08]">
                 {/* Counter */}
-                <div className="flex items-center gap-2.5">
-                  <span className="text-lg sm:text-2xl font-bold font-mono text-cyan-400">
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <span className="text-base sm:text-2xl font-bold font-mono text-cyan-400">
                     {String(currentIndex + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-slate-600 font-mono text-base sm:text-lg">/</span>
+                  <span className="text-slate-600 font-mono text-sm sm:text-lg">/</span>
                   <span className="text-xs sm:text-sm font-mono text-slate-400">
                     {String(total).padStart(2, '0')}
                   </span>
                 </div>
 
                 {/* Step indicator bars */}
-                <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   {displayProjects.map((_, idx) => (
                     <button
                       key={idx}
@@ -209,38 +195,38 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                       aria-label={`Go to project ${idx + 1}`}
                       className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                         idx === currentIndex
-                          ? 'w-7 sm:w-8 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]'
-                          : 'w-2 bg-slate-800 hover:bg-slate-700'
+                          ? 'w-6 sm:w-8 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]'
+                          : 'w-1.5 sm:w-2 bg-slate-800 hover:bg-slate-700'
                       }`}
                     />
                   ))}
                 </div>
 
                 {/* Arrow navigation buttons */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     onClick={prevProject}
                     disabled={currentIndex === 0}
-                    className={`nav-arrow-btn p-2 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[36px] min-h-[36px] ${
+                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${
                       currentIndex === 0
                         ? 'border-white/10 text-slate-600 bg-slate-900/40 cursor-not-allowed opacity-40'
                         : 'border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 bg-slate-900/80 hover:bg-slate-800 active:scale-95'
                     }`}
                     aria-label="Previous project"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                   <button
                     onClick={nextProject}
                     disabled={currentIndex === total - 1}
-                    className={`nav-arrow-btn p-2 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[36px] min-h-[36px] ${
+                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${
                       currentIndex === total - 1
                         ? 'border-white/10 text-slate-600 bg-slate-900/40 cursor-not-allowed opacity-40'
                         : 'border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 bg-slate-900/80 hover:bg-slate-800 active:scale-95'
                     }`}
                     aria-label="Next project"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               </div>
@@ -248,18 +234,18 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
 
             {/* Right Column: Project Showcase Card (Changes smoothly with scroll) */}
             <div className="lg:col-span-7 w-full">
-              <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-[520px] flex items-center justify-center">
+              <div className="relative min-h-0 sm:min-h-[460px] lg:min-h-[520px] flex items-center justify-center">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={current.id || currentIndex}
-                    initial={{ opacity: 0, y: 25, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -25, scale: 0.98 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.98 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full bg-[#0d111c] border border-cyan-500/20 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl group hover:border-cyan-500/35 transition-all"
+                    className="w-full bg-[#0d111c] border border-cyan-500/20 rounded-2xl sm:rounded-3xl p-3 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl group hover:border-cyan-500/35 transition-all"
                   >
                     {/* Screenshot Mockup Container */}
-                    <div className="relative w-full aspect-[16/10] max-h-[160px] sm:max-h-[260px] lg:max-h-[320px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 border border-white/[0.06] shadow-inner">
+                    <div className="relative w-full aspect-[16/10] max-h-[140px] sm:max-h-[260px] lg:max-h-[320px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 border border-white/[0.06] shadow-inner">
                       <img
                         src={current.image}
                         alt={current.title}
@@ -272,13 +258,13 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                     </div>
 
                     {/* Project Details Below Screenshot */}
-                    <div className="mt-3.5 sm:mt-5 flex flex-col space-y-2.5 sm:space-y-4">
+                    <div className="mt-2.5 sm:mt-5 flex flex-col space-y-2 sm:space-y-4">
                       {/* Tags */}
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         {current.tags?.map((tag, idx) => (
                           <span
                             key={idx}
-                            className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-[#121927] text-cyan-200 border border-cyan-500/20"
+                            className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-[#121927] text-cyan-200 border border-cyan-500/20"
                           >
                             {tag}
                           </span>
@@ -286,7 +272,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-white tracking-tight font-['Outfit']">
+                      <h3 className="text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight font-['Outfit']">
                         {current.title}
                       </h3>
 
@@ -296,13 +282,13 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                       </p>
 
                       {/* Action Buttons - Fully visible and accessible */}
-                      <div className="pt-1.5 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                      <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
                         {current.demoLink && (
                           <a
                             href={current.demoLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white text-slate-950 font-semibold text-xs sm:text-sm hover:bg-cyan-100 transition-all shadow-md active:scale-95 cursor-pointer"
+                            className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white text-slate-950 font-semibold text-xs sm:text-sm hover:bg-cyan-100 transition-all shadow-md active:scale-95 cursor-pointer"
                           >
                             <span>Visit Project</span>
                             <ArrowUpRight className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
@@ -311,7 +297,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
 
                         <button
                           onClick={() => setSelectedPreview(current)}
-                          className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-[#121927] hover:bg-slate-800 text-slate-300 hover:text-white font-medium text-xs sm:text-sm border border-cyan-500/30 transition-all active:scale-95 cursor-pointer"
+                          className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full bg-[#121927] hover:bg-slate-800 text-slate-300 hover:text-white font-medium text-xs sm:text-sm border border-cyan-500/30 transition-all active:scale-95 cursor-pointer"
                         >
                           <span>Preview</span>
                           <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
@@ -322,7 +308,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                             href={current.githubLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center p-2 rounded-full bg-[#121927] hover:bg-slate-800 text-slate-400 hover:text-cyan-300 border border-cyan-500/30 transition-all ml-auto active:scale-95 cursor-pointer"
+                            className="inline-flex items-center justify-center p-1.5 sm:p-2 rounded-full bg-[#121927] hover:bg-slate-800 text-slate-400 hover:text-cyan-300 border border-cyan-500/30 transition-all ml-auto active:scale-95 cursor-pointer"
                             aria-label="View source code on GitHub"
                           >
                             <GithubIcon className="w-4 h-4" />
