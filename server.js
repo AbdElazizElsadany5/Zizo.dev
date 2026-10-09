@@ -42,14 +42,14 @@ const sendContactNotificationEmail = async ({ name, email, message }) => {
     const emailTo = (process.env.EMAIL_TO ? process.env.EMAIL_TO.trim() : null) || emailUser;
 
     if (!nodemailer || !emailUser || !emailPass) {
-        console.warn("⚠️ [Email Notification Skipped] Missing configuration: " + 
-            (!nodemailer ? "nodemailer not loaded; " : "") + 
-            (!emailUser ? "EMAIL_USER not set; " : "") + 
+        console.warn("⚠️ [Email Notification Skipped] Missing configuration: " +
+            (!nodemailer ? "nodemailer not loaded; " : "") +
+            (!emailUser ? "EMAIL_USER not set; " : "") +
             (!emailPass ? "EMAIL_PASS not set; " : "")
         );
-        return { 
-            success: false, 
-            error: "EMAIL_USER or EMAIL_PASS environment variable is missing." 
+        return {
+            success: false,
+            error: "EMAIL_USER or EMAIL_PASS environment variable is missing."
         };
     }
 
@@ -463,7 +463,7 @@ app.get('/api/profile', async (req, res) => {
             }
             return res.json(profile);
         }
-        
+
         const profile = readJSON(PROFILE_FILE);
         res.json(profile);
     } catch (err) {
@@ -712,7 +712,7 @@ app.post('/api/projects/upload-image', async (req, res) => {
 
         const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
         const buffer = Buffer.from(matches[2], 'base64');
-        
+
         // Ensure assets/uploads directory exists
         const uploadsDir = path.join(ASSETS_DIR, 'uploads');
         if (!fs.existsSync(uploadsDir)) {
@@ -721,9 +721,9 @@ app.post('/api/projects/upload-image', async (req, res) => {
 
         const uniqueName = `project_${Date.now()}.${ext}`;
         const filePath = path.join(uploadsDir, uniqueName);
-        
+
         fs.writeFileSync(filePath, buffer);
-        
+
         const relativeUrl = `/assets/uploads/${uniqueName}`;
         res.json({ success: true, imageUrl: relativeUrl });
     } catch (err) {
@@ -1086,10 +1086,10 @@ app.post('/api/messages', async (req, res) => {
                 emailResult = { success: false, error: err.message };
             }
 
-            return res.status(201).json({ 
-                success: true, 
-                message: o, 
-                emailNotification: emailResult 
+            return res.status(201).json({
+                success: true,
+                message: o,
+                emailNotification: emailResult
             });
         }
 
@@ -1109,10 +1109,10 @@ app.post('/api/messages', async (req, res) => {
                 emailResult = { success: false, error: err.message };
             }
 
-            res.status(201).json({ 
-                success: true, 
-                message: newMessage, 
-                emailNotification: emailResult 
+            res.status(201).json({
+                success: true,
+                message: newMessage,
+                emailNotification: emailResult
             });
         } else {
             res.status(500).json({ success: false, message: "Failed to save message." });
@@ -1278,7 +1278,7 @@ function extractSearchInfo(searchQuery, referrer = '') {
             const q = parsedUrl.searchParams.get('q') || parsedUrl.searchParams.get('query') || parsedUrl.searchParams.get('search');
             if (q) return q.trim();
         }
-    } catch (e) {}
+    } catch (e) { }
     return '';
 }
 
@@ -1289,7 +1289,7 @@ app.post('/api/analytics/track', async (req, res) => {
         const ip = typeof rawIp === 'string' ? rawIp.split(',')[0].trim() : '127.0.0.1';
         const userAgent = req.headers['user-agent'] || '';
         const { browser, os, device } = parseUserAgent(userAgent);
-        
+
         const referrer = req.body.referrer || req.headers['referer'] || 'Direct';
         const searchQuery = extractSearchInfo(req.body.searchQuery, referrer);
         const path = req.body.path || '/';

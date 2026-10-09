@@ -34,7 +34,7 @@ export default function Contact({ profile }) {
       if (res.ok && data.success) {
         setStatus({ loading: false, success: true, error: null });
         setFormData({ name: '', email: '', message: '' });
-        
+
         // Trigger celebratory confetti in cyan/blue
         confetti({
           particleCount: 100,
@@ -62,9 +62,9 @@ export default function Contact({ profile }) {
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           {/* Left Column: Contact Info */}
           <div className="lg:col-span-5 space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-cyan-500/30 text-xs font-mono font-semibold tracking-[0.25em] uppercase text-cyan-400 mb-2 shadow-sm">

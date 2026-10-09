@@ -34,8 +34,7 @@ export default function Hero({ profile, skills = [], projects = [] }) {
               '  - skills   : Print out core technical stack.',
               '  - projects : List featured project titles.',
               '  - contact  : Get email and social contact links.',
-              '  - clear    : Clear terminal screen.',
-              '  - admin    : Open Admin Panel dashboard.'
+              '  - clear    : Clear terminal screen.'
             ].join('\n')
           });
           break;
@@ -95,7 +94,7 @@ export default function Hero({ profile, skills = [], projects = [] }) {
 
   return (
     <section id="home" className="relative min-h-screen pt-32 sm:pt-36 pb-16 sm:pb-20 flex flex-col items-center justify-center overflow-hidden w-full max-w-full">
-      
+
       {/* Dynamic Animated Floating Code Shapes (Contained & Safe on Mobile) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0 max-w-full">
         {/* Shape 1: </> */}
@@ -170,7 +169,7 @@ export default function Hero({ profile, skills = [], projects = [] }) {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[550px] md:w-[750px] h-[300px] sm:h-[450px] bg-gradient-to-tr from-cyan-500/20 via-sky-500/15 to-blue-600/10 rounded-full blur-[90px] sm:blur-[140px] pointer-events-none -z-10" />
 
       <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center text-center z-10">
-        
+
         {/* Availability Badge */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}

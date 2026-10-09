@@ -78,17 +78,15 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
   const logoSub = profile?.logoSubtitle || 'PORTFOLIO';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 sm:pt-5 px-2.5 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out w-full max-w-full overflow-x-hidden ${
-      hideNav
+    <header className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 sm:pt-5 px-2.5 sm:px-4 pointer-events-none transition-all duration-500 ease-in-out w-full max-w-full overflow-x-hidden ${hideNav
         ? '-translate-y-36 opacity-0 pointer-events-none'
         : 'translate-y-0 opacity-100'
-    }`}>
+      }`}>
       <nav
-        className={`pointer-events-auto w-full transition-all duration-500 flex items-center justify-between ${
-          scrolled
+        className={`pointer-events-auto w-full transition-all duration-500 flex items-center justify-between ${scrolled
             ? 'max-w-[1050px] bg-[#0a0f1d]/90 backdrop-blur-2xl border border-cyan-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_25px_rgba(6,182,212,0.12)] rounded-full px-3.5 sm:px-6 py-2 sm:py-2.5'
             : 'max-w-6xl bg-transparent px-2 sm:px-4 py-2'
-        }`}
+          }`}
       >
         {/* Brand Logo - Electric Cyan & Sky Blue */}
         <a
@@ -108,9 +106,8 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
             </span>
           </div>
           <span
-            className={`text-[9px] font-mono tracking-[0.28em] text-cyan-500/80 uppercase font-bold mt-1 transition-all duration-300 ${
-              scrolled ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-4'
-            }`}
+            className={`text-[9px] font-mono tracking-[0.28em] text-cyan-500/80 uppercase font-bold mt-1 transition-all duration-300 ${scrolled ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-4'
+              }`}
           >
             {logoSub}
           </span>
@@ -118,11 +115,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
 
         {/* Center Nav Menu - Blue/Cyan Glass Pill */}
         <div
-          className={`hidden md:flex items-center gap-1 transition-all duration-400 ${
-            scrolled
+          className={`hidden md:flex items-center gap-1 transition-all duration-400 ${scrolled
               ? 'bg-transparent border-transparent p-0'
               : 'bg-[#0a0f1d]/80 border border-cyan-500/20 backdrop-blur-xl rounded-full px-3 py-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)]'
-          }`}
+            }`}
         >
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -131,11 +127,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${
-                  isActive
+                className={`relative px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 flex items-center gap-1.5 ${isActive
                     ? 'text-cyan-300 font-bold'
                     : 'text-slate-400 hover:text-cyan-200'
-                }`}
+                  }`}
               >
                 {isActive && (
                   <motion.div
@@ -156,11 +151,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
           {/* Theme Toggle Pill Switch (Developer Aesthetic with Micro-Icons) */}
           <button
             onClick={onToggleTheme}
-            className={`relative w-14 h-7 rounded-full transition-all duration-300 p-0.5 flex items-center cursor-pointer border ${
-              theme === 'light'
+            className={`relative w-14 h-7 rounded-full transition-all duration-300 p-0.5 flex items-center cursor-pointer border ${theme === 'light'
                 ? 'bg-slate-100 border-cyan-500/30 shadow-[0_2px_8px_rgba(6,182,212,0.15)]'
                 : 'bg-[#0f1422] border-cyan-500/30 shadow-[0_0_12px_rgba(6,182,212,0.2)]'
-            }`}
+              }`}
             aria-label="Toggle dark/light theme"
             title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
           >
@@ -172,11 +166,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
 
             {/* Glowing Active Slider Knob */}
             <motion.div
-              className={`w-5.5 h-5.5 rounded-full flex items-center justify-center transition-all shadow-md z-10 ${
-                theme === 'light'
+              className={`w-5.5 h-5.5 rounded-full flex items-center justify-center transition-all shadow-md z-10 ${theme === 'light'
                   ? 'bg-gradient-to-tr from-amber-400 to-amber-500 text-white shadow-[0_0_12px_rgba(245,158,11,0.7)]'
                   : 'bg-gradient-to-tr from-[#ccff00] to-[#b3e600] text-slate-950 shadow-[0_0_14px_rgba(204,255,0,0.85)]'
-              }`}
+                }`}
               animate={{ x: theme === 'light' ? 26 : 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             >
@@ -205,19 +198,17 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
         <div className="md:hidden flex items-center gap-2.5">
           <button
             onClick={onToggleTheme}
-            className={`relative w-13 h-6.5 rounded-full transition-all duration-300 p-0.5 flex items-center cursor-pointer border ${
-              theme === 'light'
+            className={`relative w-13 h-6.5 rounded-full transition-all duration-300 p-0.5 flex items-center cursor-pointer border ${theme === 'light'
                 ? 'bg-slate-100 border-cyan-500/30'
                 : 'bg-[#0f1422] border-cyan-500/30'
-            }`}
+              }`}
             aria-label="Toggle dark/light theme"
           >
             <motion.div
-              className={`w-5 h-5 rounded-full flex items-center justify-center shadow-md ${
-                theme === 'light'
+              className={`w-5 h-5 rounded-full flex items-center justify-center shadow-md ${theme === 'light'
                   ? 'bg-gradient-to-tr from-amber-400 to-amber-500 text-white shadow-[0_0_8px_rgba(245,158,11,0.8)]'
                   : 'bg-gradient-to-tr from-[#ccff00] to-[#b3e600] text-slate-950 shadow-[0_0_8px_rgba(204,255,0,0.85)]'
-              }`}
+                }`}
               animate={{ x: theme === 'light' ? 22 : 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             >
@@ -256,11 +247,10 @@ export default function Navbar({ profile, theme = 'dark', onToggleTheme }) {
                   <button
                     key={item.id}
                     onClick={() => scrollTo(item.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
-                      isActive
+                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${isActive
                         ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_15px_rgba(6,182,212,0.2)]'
                         : 'text-slate-300 hover:bg-white/5 hover:text-cyan-200'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{item.label}</span>

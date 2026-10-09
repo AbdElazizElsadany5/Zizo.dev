@@ -116,13 +116,13 @@ export default function About({ profile, smoothScroll = true }) {
     >
       {/* Pinned Sticky Viewport: Unveils words smoothly without dead space */}
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        
+
         {/* Subtle background ambient lighting */}
         <div className="absolute top-1/4 left-10 w-80 sm:w-96 h-80 sm:h-96 bg-cyan-500/10 rounded-full blur-[160px] pointer-events-none -z-10" />
         <div className="absolute bottom-1/4 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-blue-600/10 rounded-full blur-[160px] pointer-events-none -z-10" />
 
         <div className="w-full max-w-4xl mx-auto flex flex-col">
-          
+
           {/* Section Header */}
           <div className="flex flex-col items-center text-center w-full mb-5 sm:mb-8">
             <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight font-['Outfit']">
@@ -133,7 +133,7 @@ export default function About({ profile, smoothScroll = true }) {
 
           {/* About Card */}
           <div className="about-card w-full relative p-5 sm:p-10 md:p-12 rounded-2xl sm:rounded-3xl bg-[#0b0f17]/95 border border-white/[0.08] backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] overflow-hidden">
-            
+
             {/* Scroll-Driven Text Content (Word by Word Reveal) */}
             <div className="space-y-4 sm:space-y-6">
               {/* Paragraph 1 */}

@@ -14,7 +14,7 @@ export default function Footer({ profile }) {
   return (
     <footer className="relative bg-[#06080e] border-t border-white/[0.06] py-12 overflow-hidden w-full max-w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-8 border-b border-white/[0.06]">
           {/* Logo & Subtitle */}
           <div className="flex flex-col items-center md:items-start">

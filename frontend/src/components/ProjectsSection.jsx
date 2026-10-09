@@ -131,7 +131,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
       className={`relative bg-[#080b11] border-b border-white/[0.06] w-full max-w-full ${effectiveSmooth ? '' : 'py-12 sm:py-20 lg:py-28'}`}
     >
       {/* Pinned Sticky Viewport when smoothScroll is enabled */}
-      <div 
+      <div
         style={{
           position: effectiveSmooth ? 'sticky' : 'relative',
           top: effectiveSmooth ? 0 : 'auto',
@@ -147,10 +147,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
 
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-center">
-            
+
             {/* Left Column: Heading, Description & Progress */}
             <div className="lg:col-span-5 flex flex-col items-start space-y-2 sm:space-y-4">
-              
+
               {/* Pill Badge */}
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-[11px] sm:text-xs font-semibold tracking-wider text-cyan-300 uppercase shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
@@ -198,11 +198,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                       key={idx}
                       onClick={() => goToProject(idx)}
                       aria-label={`Go to project ${idx + 1}`}
-                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        idx === currentIndex
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${idx === currentIndex
                           ? 'w-6 sm:w-8 bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 shadow-[0_0_10px_rgba(6,182,212,0.8)]'
                           : 'w-1.5 sm:w-2 bg-slate-800 hover:bg-slate-700'
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -212,11 +211,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                   <button
                     onClick={prevProject}
                     disabled={currentIndex === 0}
-                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${
-                      currentIndex === 0
+                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${currentIndex === 0
                         ? 'border-white/10 text-slate-600 bg-slate-900/40 cursor-not-allowed opacity-40'
                         : 'border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 bg-slate-900/80 hover:bg-slate-800 active:scale-95'
-                    }`}
+                      }`}
                     aria-label="Previous project"
                   >
                     <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -224,11 +222,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                   <button
                     onClick={nextProject}
                     disabled={currentIndex === total - 1}
-                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${
-                      currentIndex === total - 1
+                    className={`nav-arrow-btn p-1.5 sm:p-2.5 rounded-full border transition-all flex items-center justify-center cursor-pointer min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] ${currentIndex === total - 1
                         ? 'border-white/10 text-slate-600 bg-slate-900/40 cursor-not-allowed opacity-40'
                         : 'border-cyan-500/30 text-slate-300 hover:text-white hover:border-cyan-400 bg-slate-900/80 hover:bg-slate-800 active:scale-95'
-                    }`}
+                      }`}
                     aria-label="Next project"
                   >
                     <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
