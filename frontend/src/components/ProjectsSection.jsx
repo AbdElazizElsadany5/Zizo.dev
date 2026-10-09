@@ -132,7 +132,12 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
     >
       {/* Pinned Sticky Viewport when smoothScroll is enabled */}
       <div 
-        className={effectiveSmooth ? "sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-3 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
+        style={{
+          position: effectiveSmooth ? 'sticky' : 'relative',
+          top: effectiveSmooth ? 0 : 'auto',
+          zIndex: 20
+        }}
+        className={effectiveSmooth ? "h-screen w-full flex items-center justify-center overflow-hidden py-3 sm:py-6" : "w-full flex items-center justify-center overflow-hidden py-4 sm:py-6"}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -141,10 +146,10 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
         <div className="absolute bottom-1/4 -right-48 w-80 sm:w-96 h-80 sm:h-96 bg-blue-600/15 rounded-full blur-[140px] pointer-events-none -z-10" />
 
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-center">
             
             {/* Left Column: Heading, Description & Progress */}
-            <div className="lg:col-span-5 flex flex-col items-start space-y-2 sm:space-y-6">
+            <div className="lg:col-span-5 flex flex-col items-start space-y-2 sm:space-y-4">
               
               {/* Pill Badge */}
               <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-[11px] sm:text-xs font-semibold tracking-wider text-cyan-300 uppercase shadow-sm">
@@ -153,13 +158,13 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
               </div>
 
               {/* Title: My Works */}
-              <h2 className="text-2xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] leading-none">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white font-['Outfit'] leading-none">
                 My <br className="hidden sm:inline" />
                 <span className="text-white">Works</span>
               </h2>
 
               {/* Description */}
-              <p className="text-slate-400 text-xs sm:text-base lg:text-lg leading-relaxed max-w-md line-clamp-2 sm:line-clamp-none">
+              <p className="text-slate-400 text-xs sm:text-sm lg:text-base leading-relaxed max-w-md line-clamp-2 sm:line-clamp-none">
                 A curated showcase of high-performance architecture, AI tools, open-source systems, and digital platforms.
               </p>
 
@@ -174,7 +179,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
               </div>
 
               {/* Stepper Navigation & Project Counter */}
-              <div className="w-full pt-2 sm:pt-4 flex items-center justify-between border-t border-white/[0.08]">
+              <div className="w-full pt-2 sm:pt-3 flex items-center justify-between border-t border-white/[0.08]">
                 {/* Counter */}
                 <div className="flex items-center gap-2 sm:gap-2.5">
                   <span className="text-base sm:text-2xl font-bold font-mono text-cyan-400">
@@ -234,18 +239,18 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
 
             {/* Right Column: Project Showcase Card (Changes smoothly with scroll) */}
             <div className="lg:col-span-7 w-full">
-              <div className="relative min-h-0 sm:min-h-[460px] lg:min-h-[520px] flex items-center justify-center">
+              <div className="relative min-h-0 sm:min-h-[420px] lg:min-h-[460px] flex items-center justify-center">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={current.id || currentIndex}
-                    initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -20, scale: 0.98 }}
+                    exit={{ opacity: 0, y: -15, scale: 0.98 }}
                     transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="w-full bg-[#0d111c] border border-cyan-500/20 rounded-2xl sm:rounded-3xl p-3 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl group hover:border-cyan-500/35 transition-all"
+                    className="w-full bg-[#0d111c] border border-cyan-500/20 rounded-2xl sm:rounded-3xl p-3 sm:p-5 lg:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-xl group hover:border-cyan-500/35 transition-all"
                   >
                     {/* Screenshot Mockup Container */}
-                    <div className="relative w-full aspect-[16/10] max-h-[140px] sm:max-h-[260px] lg:max-h-[320px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 border border-white/[0.06] shadow-inner">
+                    <div className="relative w-full aspect-[16/10] max-h-[140px] sm:max-h-[220px] lg:max-h-[260px] rounded-xl sm:rounded-2xl overflow-hidden bg-slate-950 border border-white/[0.06] shadow-inner">
                       <img
                         src={current.image}
                         alt={current.title}
@@ -258,7 +263,7 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                     </div>
 
                     {/* Project Details Below Screenshot */}
-                    <div className="mt-2.5 sm:mt-5 flex flex-col space-y-2 sm:space-y-4">
+                    <div className="mt-2.5 sm:mt-4 flex flex-col space-y-2 sm:space-y-3">
                       {/* Tags */}
                       <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                         {current.tags?.map((tag, idx) => (
@@ -272,17 +277,17 @@ export default function ProjectsSection({ projects, smoothScroll = true }) {
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-base sm:text-2xl lg:text-3xl font-bold text-white tracking-tight font-['Outfit']">
+                      <h3 className="text-base sm:text-xl lg:text-2xl font-bold text-white tracking-tight font-['Outfit']">
                         {current.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-slate-400 text-xs sm:text-sm lg:text-base leading-relaxed line-clamp-2 sm:line-clamp-3">
+                      <p className="text-slate-400 text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-3">
                         {current.description}
                       </p>
 
                       {/* Action Buttons - Fully visible and accessible */}
-                      <div className="pt-1 sm:pt-2 flex flex-wrap items-center gap-2 sm:gap-3">
+                      <div className="pt-1 flex flex-wrap items-center gap-2 sm:gap-3">
                         {current.demoLink && (
                           <a
                             href={current.demoLink}
