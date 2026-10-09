@@ -170,6 +170,7 @@ const ProfileSchema = new mongoose.Schema({
     cvBase64: String,
     githubUrl: String,
     linkedinUrl: String,
+    facebookUrl: String,
     twitterUrl: String
 });
 const Profile = mongoose.model('Profile', ProfileSchema);
@@ -364,7 +365,8 @@ const initialProfile = {
     successRate: "99%",
     githubUrl: "https://github.com/zizoelsadany",
     linkedinUrl: "https://linkedin.com/in/abd-elaziz-elsadany",
-    twitterUrl: "https://twitter.com"
+    facebookUrl: "https://facebook.com",
+    twitterUrl: "https://facebook.com"
 };
 
 if (!fs.existsSync(PROFILE_FILE)) {
@@ -1491,7 +1493,14 @@ app.get('/api', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    if (req.path === '/admin' || req.path === '/admin.html') {
+    const lowerPath = req.path.toLowerCase();
+    const query = req.query || {};
+    const isSecretQuery = query.zizoadmin !== undefined ||
+                          query.ZIZOADMIN !== undefined ||
+                          (query.q && query.q.toLowerCase() === 'zizoadmin') ||
+                          (query.search && query.search.toLowerCase() === 'zizoadmin');
+
+    if (lowerPath === '/zizoadmin' || isSecretQuery) {
         const adminPath = fs.existsSync(path.join(FRONTEND_DIST, 'admin.html'))
             ? path.join(FRONTEND_DIST, 'admin.html')
             : (fs.existsSync(path.join(FRONTEND_PUBLIC, 'admin.html'))
@@ -1501,6 +1510,9 @@ app.get('*', (req, res) => {
             return res.sendFile(adminPath);
         }
         return res.status(404).send('Admin panel not found.');
+    }
+    if (lowerPath === '/admin') {
+        return res.redirect('/');
     }
     if (req.path.includes('.') || req.path.startsWith('/assets/') || req.path.startsWith('/data/')) {
         return res.status(404).send('Not Found');

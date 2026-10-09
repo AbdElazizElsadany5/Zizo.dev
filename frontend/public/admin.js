@@ -551,7 +551,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('profile-success').value = profile.successRate || '';
             document.getElementById('profile-github').value = profile.githubUrl || '';
             document.getElementById('profile-linkedin').value = profile.linkedinUrl || '';
-            document.getElementById('profile-twitter').value = profile.twitterUrl || '';
+            const fbInput = document.getElementById('profile-facebook') || document.getElementById('profile-twitter');
+            if (fbInput) {
+                fbInput.value = profile.facebookUrl || profile.twitterUrl || '';
+            }
         } catch (err) {
             console.error("Error loading profile configuration:", err);
         }
@@ -570,6 +573,8 @@ document.addEventListener('DOMContentLoaded', () => {
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('zizo_admin_token');
+            const fbInput = document.getElementById('profile-facebook') || document.getElementById('profile-twitter');
+            const fbVal = fbInput ? fbInput.value : '';
 
             const updatedProfile = {
                 logoFirstName: document.getElementById('profile-logo-first').value,
@@ -588,7 +593,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 successRate: document.getElementById('profile-success').value,
                 githubUrl: document.getElementById('profile-github').value,
                 linkedinUrl: document.getElementById('profile-linkedin').value,
-                twitterUrl: document.getElementById('profile-twitter').value
+                facebookUrl: fbVal,
+                twitterUrl: fbVal
             };
 
             profileStatus.className = 'form-status';

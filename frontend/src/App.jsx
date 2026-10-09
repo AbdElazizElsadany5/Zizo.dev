@@ -43,6 +43,23 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Secret Admin Access via URL Search/Path
+    try {
+      const pathname = window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '');
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = (urlParams.get('q') || urlParams.get('search') || '').toLowerCase().trim();
+      const hasSecretParam = urlParams.has('zizoadmin') || urlParams.has('ZIZOADMIN');
+
+      if (pathname === 'zizoadmin' || q === 'zizoadmin' || hasSecretParam) {
+        window.location.replace('/admin.html');
+        return;
+      }
+      if (pathname === 'admin') {
+        window.location.replace('/');
+        return;
+      }
+    } catch (e) {}
+
     // 1. Visitor Analytics Tracking
     try {
       const referrer = document.referrer || 'Direct';

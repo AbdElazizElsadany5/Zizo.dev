@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
-import { GithubIcon, LinkedinIcon, TwitterIcon } from './SocialIcons';
+import { GithubIcon, LinkedinIcon, FacebookIcon } from './SocialIcons';
 
 export default function Footer({ profile }) {
   const scrollToTop = () => {
@@ -64,15 +64,15 @@ export default function Footer({ profile }) {
                 <LinkedinIcon className="w-4 h-4" />
               </a>
             )}
-            {profile?.twitterUrl && (
+            {(profile?.facebookUrl || profile?.twitterUrl) && (
               <a
-                href={profile.twitterUrl}
+                href={profile.facebookUrl || profile.twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-cyan-500/40 transition-colors"
-                aria-label="Twitter"
+                aria-label="Facebook"
               >
-                <TwitterIcon className="w-4 h-4" />
+                <FacebookIcon className="w-4 h-4" />
               </a>
             )}
             <button

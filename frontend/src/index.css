@@ -344,7 +344,8 @@ html.light [class*="bg-[#0d121e]"]:hover {
 /* Footer Social Icons & Back to Top in Light Mode */
 html.light footer a[aria-label="GitHub"],
 html.light footer a[aria-label="LinkedIn"],
-html.light footer a[aria-label="Twitter"] {
+html.light footer a[aria-label="Twitter"],
+html.light footer a[aria-label="Facebook"] {
   background-color: #ffffff !important;
   border-color: rgba(15, 23, 42, 0.12) !important;
   color: #0f172a !important;
@@ -353,7 +354,8 @@ html.light footer a[aria-label="Twitter"] {
 
 html.light footer a[aria-label="GitHub"] svg,
 html.light footer a[aria-label="LinkedIn"] svg,
-html.light footer a[aria-label="Twitter"] svg {
+html.light footer a[aria-label="Twitter"] svg,
+html.light footer a[aria-label="Facebook"] svg {
   color: #0f172a !important;
 }
 

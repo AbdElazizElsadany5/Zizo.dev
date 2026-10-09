@@ -19,7 +19,11 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/admin",
+      "source": "/zizoadmin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/ZIZOADMIN",
       "destination": "/admin.html"
     },
     {

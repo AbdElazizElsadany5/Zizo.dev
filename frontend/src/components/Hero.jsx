@@ -70,8 +70,8 @@ export default function Hero({ profile, skills = [], projects = [] }) {
           setTerminalHistory([]);
           setInputValue('');
           return;
-        case 'admin':
-          newHistory.push({ type: 'output', text: 'Opening Admin Panel (/admin.html)...' });
+        case 'zizoadmin':
+          newHistory.push({ type: 'output', text: 'Access granted. Opening Admin Panel...' });
           setTimeout(() => {
             window.open('/admin.html', '_blank');
           }, 600);
