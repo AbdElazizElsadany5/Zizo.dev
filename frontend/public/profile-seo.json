@@ -43,6 +43,8 @@
   "bioArabic": "عبد العزيز السعدني / عبد العزيز عرفه (زيزو) هو سوفت وير انجنير (Software Engineer)، فرونت ديفلوبر (Frontend Developer)، باك ديفلوبر (Backend Developer) ومطور ويب متكامل في القاهرة، مصر. متخصص في بناء أنظمة وتطبيقات الويب الحديثة وحلول السوفت وير عالية الأداء بتصميمات استثنائية وسرعة فائقة.",
   "bioEnglish": "AbdElaziz Elsadany / AbdElaziz Arafa (Zizo) is a Senior Software Engineer, Frontend Developer, and Backend Developer based in Cairo, Egypt. Specializing in high-performance web applications, React, Next.js, Node.js, and scalable cloud solutions.",
   "canonicalUrl": "https://abdelazizelsadany.dev/",
+  "ogImage": "https://abdelazizelsadany.dev/assets/og-image.png",
+  "profileImage": "https://abdelazizelsadany.dev/assets/og-image.png",
   "email": "zizoelsadany5@gmail.com",
   "location": {
     "city": "Cairo",
